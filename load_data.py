@@ -22,3 +22,7 @@ def load_data(filename: str):
     train_data = df[msk]
     test_data = df[~msk]
     return train_data, test_data
+    # df = df.fillna(0)
+    # train, test = train_test_split(df, test_size=0.2)
+    # X_train, y_train, X_test, y_test = train.loc[:, train.columns != 'chd'].values, train["chd"].values, test.loc[:, test.columns != 'chd'].values, test["chd"].values
+
