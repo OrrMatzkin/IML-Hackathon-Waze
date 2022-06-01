@@ -1,6 +1,9 @@
+import sys
 import numpy as np
 import pandas as pd
-import sys
+
+from load_data import load_data
+from preprocess_data import preprocess_data
 
 
 def diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
@@ -13,20 +16,30 @@ def diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
     return features
 
 
-def preprocess(data: pd.DataFrame) -> (pd.DataFrame, list):
+def preprocess(df: pd.DataFrame) -> (pd.DataFrame, list):
     # Remove duplicates by id and then removes the id  feature
-    data.drop_duplicates(subset=['OBJECTID'], inplace=True)
+    df.drop_duplicates(subset=['OBJECTID'], inplace=True)
 
     # Removes 'OBJECTID' 'nComments' and diluted (above 90% empty) features
     remove_features = diluted_features(data)
     remove_features.append(['OBJECTID', 'nComments'])
-    data.drop(remove_features, axis=1, inplace=True)
+    df.drop(remove_features, axis=1, inplace=True)
+    
+    # most major accidents happened outside of city, so if 'linqmap_subtype' is null and is outside of the city, put 'ACCIDENT_MAJOR', and 'ACCIDENT_MINOR' otherwise
+    accident_type = df[df["linqmap_type"] == "ACCIDENT"]
+    accident_type['linqmap_subtype'].mask(accident_type['linqmap_subtype'].isna() & accident_type["linqmap_city"].isna(), 'ACCIDENT_MAJOR', inplace=True)
+    accident_type['linqmap_subtype'].mask(accident_type['linqmap_subtype'].isna() & ~accident_type["linqmap_city"].isna(), 'ACCIDENT_MINOR', inplace=True)
 
-    return data, remove_features
+    ROAD_CLOSED_type = df[df["linqmap_type"] == "ROAD_CLOSED"]
+    fig = px.scatter(ROAD_CLOSED_type, x="linqmap_street", y="linqmap_subtype")
+    fig.show()
+
+    return df, remove_features
 
 
 if __name__ == '__main__':
-    args = sys.argv
-    waze_data = pd.read_csv("waze_data.csv")
-    process_data = preprocess(waze_data)
     print("GOOD LUCK")
+    preprocess(pd.read_csv("waze_data.csv"))
+    np.random.seed(0)
+    X_train, X_test = load_data(f"waze_data.csv")
+    preprocess_data(X_train)
