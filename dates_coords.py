@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+import numpy as np
 from pyproj import CRS
 from pyproj import Transformer
 
@@ -7,12 +8,12 @@ from pyproj import Transformer
 def convert_dates(data: pd.DataFrame) -> None:
     dates = data['update_date']
     data['update_date'] = pd.Series(
-        [datetime.fromtimestamp(time) for time in dates])
+        [datetime.fromtimestamp(time / 1000) for time in dates])
 
 
 def convert_coordinates(data) -> None:
-    X = data['x']
-    Y = data['y']
+    X = np.array(data['x'])
+    Y = np.array(data['y'])
 
     crs = CRS.from_epsg(6991)
     crs.to_epsg()
@@ -23,4 +24,5 @@ def convert_coordinates(data) -> None:
         "1.669690,5.424800 +units=m +no_defs")
     transformer = Transformer.from_crs("EPSG:6991", "EPSG:4326")
     wgs84_coords = [transformer.transform(X[i], Y[i]) for i in range(len(X))]
-    X, Y = wgs84_coords
+    data['y'] = pd.Series([tup[0] for tup in wgs84_coords])
+    data['x'] = pd.Series([tup[1] for tup in wgs84_coords])
