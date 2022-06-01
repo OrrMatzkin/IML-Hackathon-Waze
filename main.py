@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -19,6 +21,12 @@ def preprocess(df: pd.DataFrame):
 
 
 
+from load_data import load_data
+from preprocess_data import preprocess_data
+
 if __name__ == '__main__':
     print("GOOD LUCK")
     preprocess(pd.read_csv("waze_data.csv"))
+    np.random.seed(0)
+    X_train, X_test = load_data(f"waze_data.csv")
+    preprocess_data(X_train)
