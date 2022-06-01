@@ -22,7 +22,7 @@ def preprocess(df: pd.DataFrame) -> (pd.DataFrame, list):
     df.drop_duplicates(subset=['OBJECTID'], inplace=True)
 
     # Removes 'OBJECTID' 'nComments' and diluted (above 90% empty) features
-    remove_features = diluted_features(data)
+    remove_features = diluted_features(df)
     remove_features.append(['OBJECTID', 'nComments'])
     df.drop(remove_features, axis=1, inplace=True)
     
