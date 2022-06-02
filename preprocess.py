@@ -38,6 +38,7 @@ def process_pubDate(df: pd.DataFrame):
     df['pubDate_day'] = [datetime.strptime(date[0:10], "%m/%d/%Y").date() for date in df['pubDate']]
     df['pubDate'] = pd.to_datetime(df['pubDate'])  # full date "15/5/2022 20:30:55" as datetime
     df['pubDate_hour'] = df['pubDate'].dt.hour  # hour as int from 0 to 24
+    df['pubDate_day_of_week'] = df['pubDate'].dt.dayofweek  # hour as int from 0 to 24
     return df
 
 
