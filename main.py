@@ -1,4 +1,4 @@
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, mean_squared_error
 from sklearn.model_selection import train_test_split, GridSearchCV
 import sys
 import warnings
@@ -60,6 +60,15 @@ def get_knn_model(X_train: np.ndarray, y_train: np.ndarray, k: int) -> KNeighbor
 def generate_pearson_correlation_heatmap(df):
     corr_df = df.corr()
     go.Figure([go.Heatmap(x=df.columns, y=df.columns, z=corr_df, type='heatmap', colorscale='Viridis')]).show(renderer="browser")
+
+
+def evalute_location(y_x_predict: pd.DataFrame, y_x_true: pd.DataFrame,
+                     y_y_predict: pd.DataFrame, y_y_true: pd.DataFrame) -> float:
+    return (mean_squared_error(y_x_predict, y_x_true) + mean_squared_error(y_y_predict, y_y_true))/2
+
+
+def evalute_type(y_type_predict: pd.DataFrame, y_type_true: pd.DataFrame) -> float:
+    return
 
 
 if __name__ == '__main__':
