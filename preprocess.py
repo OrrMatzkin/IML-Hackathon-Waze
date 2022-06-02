@@ -34,17 +34,12 @@ def categorize_linqmap_city(df: pd.DataFrame):
 
 
 def process_pubDate(df: pd.DataFrame):
-    df['pubDate'] = pd.to_datetime(df['pubDate'])
-    df['pubDate'] = df['pubDate'].dt.year
-    df['pubDate'] = df['pubDate'].dt.month
-    df['pubDate'] = df['pubDate'].dt.week
-    df['pubDate'] = df['pubDate'].dt.day
-    df['pubDate'] = df['pubDate'].dt.hour
-    df['pubDate'] = df['pubDate'].dt.minute
-    df['pubDate'] = df['pubDate'].dt.dayofweek
-    df = df.drop(["pubDate"], axis=1)
+    # "15/5/2022" datetime
+    df['pubDate_day'] = [datetime.strptime(date[0:10], "%m/%d/%Y").date() for date in df['pubDate']]
+    df['pubDate'] = pd.to_datetime(df['pubDate'])  # full date "15/5/2022 20:30:55" as datetime
+    df['pubDate_hour'] = df['pubDate'].dt.hour  # hour as int from 0 to 24
+    df['pubDate_day_of_week'] = df['pubDate'].dt.dayofweek  # hour as int from 0 to 24
     return df
-
 
 def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
     df.drop_duplicates(subset=['OBJECTID'], inplace=True)
@@ -71,6 +66,16 @@ def add_accident_type(df: pd.DataFrame):
     # fig = px.scatter(ROAD_CLOSED_type, x="linqmap_street", y="linqmap_subtype")
     # fig.show()
 
+def compress_4_rows_into_one(df: pd.DataFrame):
+    # make list of sub lists with 4 samples
+    list_of_4_rows = [[df.iloc[i+j, :] for j in range(4)] for i in range(1000)]
+    # concat each sub list to become one sample
+    train_X = pd.DataFrame([pd.concat(four_rows, axis=0, ignore_index=True) for four_rows in list_of_4_rows])
+    
+    train_y = df.loc[:, ["linqmap_subtype"]]
+    train_y = train_y[4:1004]
+
+    return train_X, train_y
 
 def preprocess(df: pd.DataFrame) -> None:
     add_accident_type(df)
@@ -78,5 +83,6 @@ def preprocess(df: pd.DataFrame) -> None:
     convert_coordinates(df)
     categorize_linqmap_city(df)
     remove_diluted_features(df)
+    process_pubDate(df)
 
 
