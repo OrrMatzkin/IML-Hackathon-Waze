@@ -1,16 +1,30 @@
 import typing
-from datetime import datetime
 import pandas as pd
 import numpy as np
+import re
 from geopy.distance import distance
-from pyproj import CRS
 from pyproj import Transformer
-import plotly.express as px
-from geopy.geocoders import Nominatim
 
 EMPTY = ['linqmap_reportDescription', 'linqmap_nearby',
          'linqmap_expectedBeginDate', 'linqmap_expectedEndDate', 'OBJECTID',
          'nComments', 'linqmap_reportMood']
+
+DISTRICTS_OF_ISRAEL = {"North District": ['בית שאן', 'טבריה', 'טמרה', 'יקנעם עלית', 'כרמיאל', 'מגדל העמק',
+                                          "מע'אר", 'מעלות תרשיחא', 'נהריה', 'נוף הגליל', 'נצרת', "סחנין"
+                                          'עראבה', 'עכו', 'עפולה', 'צפת', 'קריית שמונה', 'שפרעם'],
+                       "Haifa District": ['אום אל - פאחם', 'אור עקיבא', 'באקה אל גרביה', 'חדרה', 'חיפה', 'טירת כרמל',
+                                          'נשר', 'קריית אתא', 'קריית ביאליק', 'קריית ים', "קריית מוצקין", 'קריית'],
+                       "Tel Aviv District": ['אור יהודה', 'בני ברק', 'בת ים', 'גבעתיים', 'הרצליה', 'חולון',
+                                             'אונו קריית', 'רמת גן', 'רמת השרון', 'תל אביב - יפו', "קריית מוצקין"],
+                       "Center District": ['אלעד', 'באר יעקב', 'גבעת שמואל', 'הוד השרון', 'טייבה', 'יבנה',
+                                           "יהוד-מונוסון", 'כפר יונה', 'כפר סבא', 'כפר קאסם', 'לוד', "מודיעין",
+                                           'נס ציונה', 'נתניה', 'פתח תקווה', 'קלנסווה', 'רעש העין', 'ראשון לציון',
+                                           'רחובות', 'רמלה', 'רעננה'],
+                       "Jerusalem District": ['בית שמש', 'ירושלים'],
+                       "Southern District": ['אופקים', 'אילת', 'אשדוד', 'אשקלון', 'באר שבע', 'דימונה',
+                                             'נתיבות', 'ערד', 'קריית גת', 'קריית מלאכי', "רהט", 'שדרות'],
+                       "Judea and Samaria District": ['אריאל', 'ביתר עילית', 'מודיעין עילית', 'מעלה אדומים', 'מודיעין']}
+
 LOCATION_TIMEOUT = 6
 
 
@@ -107,6 +121,7 @@ def add_accident_type(df: pd.DataFrame):
 
 
 def process_city_street(df: pd.DataFrame):
+    n = 0
     df['linqmap_street'].fillna(0, inplace=True)
     for index, sample in df.iterrows():
         curr_city = sample['linqmap_city']
@@ -132,12 +147,15 @@ def process_city_street(df: pd.DataFrame):
                     curr_street = curr_street[::-1]
                     curr_street = curr_street[:len(curr_street) - (indices[0] + 2)].strip()[::-1]
                     df['linqmap_street'][index] = curr_street
-
+        print(n)
         # city and street is missing (we search for the nearset coordinates and fill the missing data)
-        if df['linqmap_city'][index] == 'Out of district' and df['linqmap_street'][index] == 0:
-            nearest_city, nearest_street = get_nearest_location(df['x'][index], df['y'][index], df)
-            df['linqmap_city'][index] = nearest_city
-            df['linqmap_street'][index] = nearest_city
+        # if df['linqmap_city'][index] == 'Out of district' and df['linqmap_street'][index] == 0:
+        #     print("searching....")
+        #     nearest_city, nearest_street = get_nearest_location(df['x'][index], df['y'][index], df)
+        #     df['linqmap_city'][index] = nearest_city
+        #     df['linqmap_street'][index] = nearest_city
+
+        n+=1
 
 
 def preprocess(df: pd.DataFrame) -> None:
