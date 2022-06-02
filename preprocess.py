@@ -264,7 +264,11 @@ def preprocess(df: pd.DataFrame, geo: bool):
     tel_aviv_data.sort_values(by=['update_time'], inplace=True)
     tel_aviv_data.drop(['update_time'], axis=1, inplace=True)
     y = pd.factorize(tel_aviv_data['linqmap_subtype'])[0]
+    y_for_x_evaluation = tel_aviv_data['x']
+    y_for_x_evaluation = y_for_x_evaluation[4:df.shape[0]]
+    y_for_y_evaluation = tel_aviv_data['y']
+    y_for_y_evaluation = y_for_y_evaluation[4:df.shape[0]]
     y_compress = y[4:df.shape[0]]
     data = make_dummies(tel_aviv_data)
-    return compress_4_rows_into_one(data), y_compress
+    return compress_4_rows_into_one(data), y_compress, y_for_x_evaluation, y_for_y_evaluation
 

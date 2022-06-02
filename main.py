@@ -8,6 +8,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import plotly.graph_objects as go
 from sklearn.neighbors import KNeighborsRegressor
 
+from evaluate_x_y import check_evaluate_x_y
 from model_selection import model_selection
 from preprocess import *
 
@@ -42,6 +43,7 @@ if __name__ == '__main__':
     np.random.seed(0)
     raw_data = pd.read_csv("waze_data.csv")
     train_data, test_data = train_test_split(raw_data, test_size=.2, random_state=42)
-    preprocess_data, preprocess_y = preprocess(train_data, True if geolocator_use == "-g" else False)
-    model_selection(preprocess_data, preprocess_y)
+    preprocess_data, preprocess_y, y_for_x_result, y_for_y_result = preprocess(train_data, True if geolocator_use == "-g" else False)
+    # model_selection(preprocess_data, preprocess_y)
+    check_evaluate_x_y(preprocess_data, y_for_x_result, y_for_y_result)
     print("done")
