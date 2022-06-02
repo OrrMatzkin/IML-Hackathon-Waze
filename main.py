@@ -27,9 +27,7 @@ def kfold_cv(X_train, y_train):
 
 def generate_pearson_correlation_heatmap(df):
     corr_df = df.corr()
-    go.Figure([go.Heatmap(x=df.columns, y=df.columns, z=corr_df,
-                          type='heatmap',
-                          colorscale='Viridis')]).show(renderer="browser")
+    go.Figure([go.Heatmap(x=df.columns, y=df.columns, z=corr_df, type='heatmap', colorscale='Viridis')]).show(renderer="browser")
 
 
 if __name__ == '__main__':
@@ -41,5 +39,5 @@ if __name__ == '__main__':
     np.random.seed(0)
     raw_data = pd.read_csv("waze_data.csv")
     train_data, test_data = train_test_split(raw_data, test_size=.2, random_state=42)
-    data = preprocess(train_data, True if geolocator_use == "-g" else False)
+    preprocess_data = preprocess(train_data, True if geolocator_use == "-g" else False)
     print("done")
