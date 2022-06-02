@@ -318,14 +318,13 @@ def preprocess(df: pd.DataFrame, geo: bool):
     dummies_data = make_dummies(df)
     dummies_data["linqmap_type"] = types_col
     dummies_data["linqmap_subtype"] = subtypes_col
-    y_for_x_evaluation = tel_aviv_data['x']
-    y_for_x_evaluation = y_for_x_evaluation[4:df.shape[0]]
-    y_for_y_evaluation = tel_aviv_data['y']
-    y_for_y_evaluation = y_for_y_evaluation[4:df.shape[0]]
 
     return dummies_data
 
-
+    # y_for_x_evaluation = tel_aviv_data['x']
+    # y_for_x_evaluation = y_for_x_evaluation[4:df.shape[0]]
+    # y_for_y_evaluation = tel_aviv_data['y']
+    # y_for_y_evaluation = y_for_y_evaluation[4:df.shape[0]]
     tel_aviv_data = dummies_data[dummies_data["linqmap_city_Tel Aviv District"] == 1]
     tel_aviv_data.sort_values(by=['update_time'], inplace=True)
     tel_aviv_data.drop(['update_time', 'linqmap_city', 'linqmap_street', 'x', 'y'], axis=1, inplace=True)
