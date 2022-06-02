@@ -2,7 +2,10 @@ import typing
 import pandas as pd
 import numpy as np
 import re
+
+from geopy import Nominatim
 from geopy.distance import distance
+from geopy.exc import GeocoderTimedOut
 from pyproj import Transformer
 
 EMPTY = ['linqmap_reportDescription', 'linqmap_nearby',
@@ -76,16 +79,16 @@ def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) ->
     return features
 
 
-# def geolocator(coordinates: str) -> str:
-#     """Return location coordinates and accurate address of the specified location."""
-#     geolocator = Nominatim(user_agent="tutorial", timeout=LOCATION_TIMEOUT)
-#     try:
-#         location = geolocator.reverse(coordinates)
-#         if location is not None:
-#             return location.address
-#     except GeocoderTimedOut as e:
-#         print(str(e))
-#     return ""
+def geolocator(coordinates: str) -> str:
+    """Return location coordinates and accurate address of the specified location."""
+    geolocator1 = Nominatim(user_agent="tutorial", timeout=LOCATION_TIMEOUT)
+    try:
+        location = geolocator1.reverse(coordinates)
+        if location is not None:
+            return location.raw
+    except GeocoderTimedOut as e:
+        print(str(e))
+    return ""
 
 def get_nearest_location(x: float, y: float, df: pd.DataFrame) -> typing.Tuple[str, str]:
     x, y = float(x), float(y)
@@ -120,10 +123,11 @@ def add_accident_type(df: pd.DataFrame):
     # fig.show()
 
 
-def process_city_street(df: pd.DataFrame):
-    n = 0
+def process_city_street(df: pd.DataFrame, geo: bool):
     df['linqmap_street'].fillna(0, inplace=True)
-    for index, sample in df.iterrows():
+    n_samples = df.shape[0]
+    printProgressBar(0, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
+    for i, (index, sample) in enumerate(df.iterrows()):
         curr_city = sample['linqmap_city']
         curr_street = sample['linqmap_street']
         found_district = False
@@ -132,6 +136,7 @@ def process_city_street(df: pd.DataFrame):
             if curr_city in cities:
                 df['linqmap_city'][index] = district
                 found_district = True
+                break
         if not found_district:
                 df['linqmap_city'][index] = 'Out of district'
 
@@ -147,21 +152,61 @@ def process_city_street(df: pd.DataFrame):
                     curr_street = curr_street[::-1]
                     curr_street = curr_street[:len(curr_street) - (indices[0] + 2)].strip()[::-1]
                     df['linqmap_street'][index] = curr_street
-        print(n)
+
         # city and street is missing (we search for the nearset coordinates and fill the missing data)
-        # if df['linqmap_city'][index] == 'Out of district' and df['linqmap_street'][index] == 0:
-        #     print("searching....")
-        #     nearest_city, nearest_street = get_nearest_location(df['x'][index], df['y'][index], df)
-        #     df['linqmap_city'][index] = nearest_city
-        #     df['linqmap_street'][index] = nearest_city
+        if geo:
+            if df['linqmap_city'][index] == 'Out of district' and df['linqmap_street'][index] == 0:
+                x_y = str(df['y'][index]) + ', ' + str(df['x'][index])
+                raw_address = geolocator(x_y)
+                try:
+                    geo_city = raw_address["address"]['city']
+                except KeyError:
+                    df['linqmap_city'][index] = 'Out of district'
+                else:
+                    found_district = False
+                    for district, cities in DISTRICTS_OF_ISRAEL.items():
+                        if geo_city in cities:
+                            df['linqmap_city'][index] = district
+                            found_district = True
+                            break
+                    if not found_district:
+                        df['linqmap_city'][index] = 'Out of district'
+                try:
+                    geo_road = raw_address["address"]['road']
+                except KeyError:
+                    df['linqmap_street'][index] = 0
+                else:
+                    df['linqmap_street'][index] = geo_road
 
-        n+=1
+        printProgressBar(i + 1, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
 
 
-def preprocess(df: pd.DataFrame) -> None:
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
+    # Print New Line on Complete
+    if iteration == total:
+        print()
+
+
+def preprocess(df: pd.DataFrame, geo: bool) -> None:
     add_accident_type(df)
     convert_dates(df)
     convert_coordinates(df)
     categorize_linqmap_city(df)
     remove_diluted_features(df)
-    process_city_street(df)
+    process_city_street(df, geo)
