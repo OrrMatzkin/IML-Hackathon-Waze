@@ -34,15 +34,10 @@ def categorize_linqmap_city(df: pd.DataFrame):
 
 
 def process_pubDate(df: pd.DataFrame):
-    df['pubDate'] = pd.to_datetime(df['pubDate'])
-    df['pubDate'] = df['pubDate'].dt.year
-    df['pubDate'] = df['pubDate'].dt.month
-    df['pubDate'] = df['pubDate'].dt.week
-    df['pubDate'] = df['pubDate'].dt.day
-    df['pubDate'] = df['pubDate'].dt.hour
-    df['pubDate'] = df['pubDate'].dt.minute
-    df['pubDate'] = df['pubDate'].dt.dayofweek
-    df = df.drop(["pubDate"], axis=1)
+    # "15/5/2022" datetime
+    df['pubDate_day'] = [datetime.strptime(date[0:10], "%m/%d/%Y").date() for date in df['pubDate']]
+    df['pubDate'] = pd.to_datetime(df['pubDate'])  # full date "15/5/2022 20:30:55" as datetime
+    df['pubDate_hour'] = df['pubDate'].dt.hour  # hour as int from 0 to 24
     return df
 
 
