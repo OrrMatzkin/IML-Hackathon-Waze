@@ -35,15 +35,11 @@ def categorize_linqmap_city(df: pd.DataFrame):
 
 def process_pubDate(df: pd.DataFrame):
     df['pubDate'] = pd.to_datetime(df['pubDate'])
-    df['pubDate'] = df['pubDate'].dt.year
-    df['pubDate'] = df['pubDate'].dt.month
-    df['pubDate'] = df['pubDate'].dt.week
-    df['pubDate'] = df['pubDate'].dt.day
-    df['pubDate'] = df['pubDate'].dt.hour
-    df['pubDate'] = df['pubDate'].dt.minute
-    df['pubDate'] = df['pubDate'].dt.dayofweek
-    df = df.drop(["pubDate"], axis=1)
-    return df
+    df['pubDate'] = pd.to_datetime(df['pubDate'])  # full date "15/5/2022 20:30:55" as datetime
+    df['date'] = pd.to_datetime(df['pubDate']).dt.date
+    df['time'] = pd.to_datetime(df['pubDate']).dt.time
+    df['pubDate_hour'] = df['pubDate'].dt.hour  # hour as int from 0 to 24
+    df['pubDate_day_of_week'] = df['pubDate'].dt.dayofweek  # hour as int from 0 to 24
 
 
 def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
@@ -59,23 +55,66 @@ def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) ->
     return features
 
 
-def add_accident_type(df: pd.DataFrame):
+
+def proccess_accident(df: pd.DataFrame):
     # most major accidents happened outside of city, so if 'linqmap_subtype' is null and is outside of the city, put 'ACCIDENT_MAJOR', and 'ACCIDENT_MINOR' otherwise
     accident_type = df[df["linqmap_type"] == "ACCIDENT"]
+
     accident_type['linqmap_subtype'].mask(
         accident_type['linqmap_subtype'].isna() & accident_type["linqmap_city"].isna(), 'ACCIDENT_MAJOR', inplace=True)
     accident_type['linqmap_subtype'].mask(
         accident_type['linqmap_subtype'].isna() & ~accident_type["linqmap_city"].isna(), 'ACCIDENT_MINOR', inplace=True)
 
-    # ROAD_CLOSED_type = df[df["linqmap_type"] == "ROAD_CLOSED"]
-    # fig = px.scatter(ROAD_CLOSED_type, x="linqmap_street", y="linqmap_subtype")
-    # fig.show()
+    df['linqmap_subtype'].fillna(accident_type['linqmap_subtype'], inplace=True)
+
+def proccess_road_closed(df):
+    road_closed_type = df[df["linqmap_type"] == "ROAD_CLOSED"]
+    null_road_closed_type = road_closed_type[road_closed_type['linqmap_subtype'].isna()]
+    for idx, row in null_road_closed_type.iterrows():
+        same_date = road_closed_type[road_closed_type["date"] == row['date']]
+        if (not(row['linqmap_street'] is None)) and (same_date['linqmap_street'].str.contains(row['linqmap_street']).any()):
+            df.at[idx,'linqmap_subtype'] = 'ROAD_CLOSED_CONSTRUCTION'
+            continue
+        row['linqmap_subtype'] = 'ROAD_CLOSED_EVENT'
+    # print("hi")
+
+def proccess_jam(df):
+    jam_type = df[df["linqmap_type"] == "JAM"]
+    null_jam_type = jam_type[jam_type['linqmap_subtype'].isna()]
+    for idx, row in null_jam_type.iterrows():
+        same_date_and_place = jam_type[(jam_type["date"] == row['date']) &
+                                       (jam_type["linqmap_street"] == row['linqmap_street']) &
+                                       (~(jam_type["linqmap_subtype"].isna()))]
+        if same_date_and_place.empty:
+            df.at[idx, 'linqmap_subtype'] = 'JAM_HEAVY_TRAFFIC'
+            continue
+        delta_time = same_date_and_place['pubDate'].apply(lambda x: np.abs((x - row['pubDate']).total_seconds()))
+        closest = same_date_and_place.loc[delta_time.idxmin()]
+        df.at[idx, 'linqmap_subtype'] = closest['linqmap_subtype']
+        # print("h")
+
+def proccess_weatherhazard(df):
+    weatherhazard_type = df[df["linqmap_type"] == "WEATHERHAZARD"]
+    dist = weatherhazard_type.linqmap_subtype.value_counts(normalize=True)
+    missing = weatherhazard_type['linqmap_subtype'].isnull()
+    weatherhazard_type.loc[missing, 'linqmap_subtype'] = np.random.choice(dist.index,
+                                                 size=len(weatherhazard_type[missing]),
+                                                 p=dist.values)
+    df['linqmap_subtype'].fillna(weatherhazard_type['linqmap_subtype'], inplace=True)
+    print('h')
+
+
+
 
 
 def preprocess(df: pd.DataFrame) -> None:
-    add_accident_type(df)
-    convert_dates(df)
+    process_pubDate(df)
     convert_coordinates(df)
+    convert_dates(df)
+    proccess_accident(df)
+    proccess_road_closed(df)
+    proccess_jam(df)
+    proccess_weatherhazard(df)
     categorize_linqmap_city(df)
     remove_diluted_features(df)
 
