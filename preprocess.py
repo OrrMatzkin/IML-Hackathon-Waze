@@ -53,6 +53,13 @@ def compress_4_rows_into_one(df: pd.DataFrame):
 
     return train_X, train_y
 
+def categorize_subtype(df: pd.DataFrame):
+    df['linqmap_subtype'] = pd.factorize(df['linqmap_subtype'])[0] + 1
+    df['linqmap_type'] = pd.factorize(df['linqmap_type'])[0] + 1
+    df['linqmap_street'] = pd.factorize(df['linqmap_street'])[0] + 1
+    df['linqmap_city'] = pd.factorize(df['linqmap_city'])[0] + 1
+    a = 5
+
 def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
     df.drop_duplicates(subset=['OBJECTID'], inplace=True)
     features = []
@@ -85,5 +92,8 @@ def preprocess(df: pd.DataFrame) -> None:
     categorize_linqmap_city(df)
     remove_diluted_features(df)
     process_pubDate(df)
+    categorize_subtype(df)
+
+
 
 
