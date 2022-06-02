@@ -9,17 +9,18 @@ from geopy.distance import distance
 from geopy.exc import GeocoderTimedOut
 from pyproj import Transformer
 
-FEATURES_TO_DROP = ['linqmap_reportDescription', 'linqmap_nearby',
+FEATURES_TO_DROP = ['linqmap_reportDescription', 'linqmap_nearby', 'update_time', 'linqmap_street',
                     'linqmap_expectedBeginDate', 'linqmap_expectedEndDate', 'OBJECTID', 'nComments',
-                    'linqmap_reportMood', 'linqmap_magvar', 'update_date_new', 'update_date',
-                    'pubDate', 'linqmap_type']
+                    'linqmap_reportMood', 'linqmap_magvar', 'update_date_new',
+                    'pubDate']
 
-FEATURES_TO_DUMMIES = ['linqmap_subtype', 'linqmap_city', 'linqmap_street', 'linqmap_roadType',
-                        'linqmap_roadType', 'linqmap_roadType', 'linqmap_roadType', 'day_of_week', 'hour_in_day']
+FEATURES_TO_DUMMIES = ['linqmap_subtype', 'linqmap_roadType', 'linqmap_type', 'linqmap_city',
+                       'linqmap_roadType', 'linqmap_roadType', 'linqmap_roadType', 'day_of_week', 'hour_in_day']
 
 DISTRICTS_OF_ISRAEL = {"North District": ['בית שאן', 'טבריה', 'טמרה', 'יקנעם עלית', 'כרמיאל', 'מגדל העמק',
                                           "מע'אר", 'מעלות תרשיחא', 'נהריה', 'נוף הגליל', 'נצרת', "סחנין"
-                                          'עראבה', 'עכו', 'עפולה', 'צפת', 'קריית שמונה', 'שפרעם'],
+                                                                                                 'עראבה', 'עכו',
+                                          'עפולה', 'צפת', 'קריית שמונה', 'שפרעם'],
                        "Haifa District": ['אום אל - פאחם', 'אור עקיבא', 'באקה אל גרביה', 'חדרה', 'חיפה', 'טירת כרמל',
                                           'נשר', 'קריית אתא', 'קריית ביאליק', 'קריית ים', "קריית מוצקין", 'קריית'],
                        "Tel Aviv District": ['אור יהודה', 'בני ברק', 'בת ים', 'גבעתיים', 'הרצליה', 'חולון',
@@ -34,6 +35,33 @@ DISTRICTS_OF_ISRAEL = {"North District": ['בית שאן', 'טבריה', 'טמר
                        "Judea and Samaria District": ['אריאל', 'ביתר עילית', 'מודיעין עילית', 'מעלה אדומים', 'מודיעין']}
 
 LOCATION_TIMEOUT = 6
+
+types = {'ACCIDENT': 0, 'JAM': 1, 'ROAD_CLOSED': 2, "WEATHERHAZARD": 3}
+subtypes = {'ACCIDENT_MAJOR': 0,
+            'ACCIDENT_MINOR': 1,
+            'ROAD_CLOSED_CONSTRUCTION': 2,
+            "ROAD_CLOSED_EVENT": 3,
+            'JAM_HEAVY_TRAFFIC': 4,
+            'JAM_MODERATE_TRAFFIC': 5,
+            'JAM_STAND_STILL_TRAFFIC': 6,
+            'HAZARD_ON_ROAD': 7,
+            'HAZARD_ON_ROAD_CAR_STOPPED': 8,
+            'HAZARD_ON_ROAD_CONSTRUCTION': 9,
+            'HAZARD_ON_ROAD_ICE': 10,
+            'HAZARD_ON_ROAD_OBJECT': 11,
+            'HAZARD_ON_ROAD_POT_HOLE': 12,
+            'HAZARD_ON_ROAD_ROAD_KILL': 13,
+            'HAZARD_ON_ROAD_TRAFFIC_LIGHT_FAULT': 14,
+            'HAZARD_ON_SHOULDER': 15,
+            'HAZARD_ON_SHOULDER_ANIMALS': 16,
+            'HAZARD_ON_SHOULDER_CAR_STOPPED': 17,
+            'HAZARD_ON_SHOULDER_MISSING_SIGN': 18,
+            'HAZARD_WEATHER': 19,
+            'HAZARD_WEATHER_FLOOD': 20,
+            'HAZARD_WEATHER_FOG': 21,
+            'HAZARD_WEATHER_HAIL': 22,
+            'HAZARD_WEATHER_HEAVY_SNOW': 23
+            }
 
 
 def convert_dates(df: pd.DataFrame) -> None:
@@ -53,18 +81,18 @@ def convert_coordinates(data) -> None:
     data['x'] = [tup[1] for tup in wgs84_coords]
 
 
-
 def categorize_linqmap_city(df: pd.DataFrame):
     pd.get_dummies(df, columns=['linqmap_city'])
 
 
 def compress_4_rows_into_one(df: pd.DataFrame):
     # make list of sub lists with 4 samples
-    list_of_4_rows = [[df.iloc[i + j, :] for j in range(4)] for i in range(df.shape[0]-4)]
+    list_of_4_rows = [[df.iloc[i + j, :] for j in range(4)] for i in range(df.shape[0] - 4)]
     # concat each sub list to become one sample
     train_X = pd.DataFrame([pd.concat(four_rows, axis=0, ignore_index=True) for four_rows in list_of_4_rows])
 
     return train_X
+
 
 def categorize_subtype(df: pd.DataFrame):
     df['linqmap_subtype'] = pd.factorize(df['linqmap_subtype'])[0] + 1
@@ -135,8 +163,9 @@ def process_road_closed(df):
     null_road_closed_type = road_closed_type[road_closed_type['linqmap_subtype'].isna()]
     for idx, row in null_road_closed_type.iterrows():
         same_date = road_closed_type[road_closed_type["update_date_new"] == row['update_date_new']]
-        if (not(row['linqmap_street'] is None)) and (same_date['linqmap_street'].str.contains(row['linqmap_street']).any()):
-            df.at[idx,'linqmap_subtype'] = 'ROAD_CLOSED_CONSTRUCTION'
+        if (not (row['linqmap_street'] is None)) and (
+        same_date['linqmap_street'].str.contains(row['linqmap_street']).any()):
+            df.at[idx, 'linqmap_subtype'] = 'ROAD_CLOSED_CONSTRUCTION'
             continue
         row['linqmap_subtype'] = 'ROAD_CLOSED_EVENT'
 
@@ -156,14 +185,13 @@ def process_jam(df):
         df.at[idx, 'linqmap_subtype'] = closest['linqmap_subtype']
 
 
-
 def process_weatherhazard(df):
     weatherhazard_type = df[df["linqmap_type"] == "WEATHERHAZARD"]
     dist = weatherhazard_type.linqmap_subtype.value_counts(normalize=True)
     missing = weatherhazard_type['linqmap_subtype'].isnull()
     weatherhazard_type.loc[missing, 'linqmap_subtype'] = np.random.choice(dist.index,
-                                                 size=len(weatherhazard_type[missing]),
-                                                 p=dist.values)
+                                                                          size=len(weatherhazard_type[missing]),
+                                                                          p=dist.values)
     df['linqmap_subtype'].fillna(weatherhazard_type['linqmap_subtype'], inplace=True)
 
 
@@ -172,6 +200,7 @@ def process_city_street(df: pd.DataFrame, geo: bool) -> None:
     n_samples = df.shape[0]
     printProgressBar(0, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
     for i, (index, sample) in enumerate(df.iterrows()):
+        # df['linqmap_type'][index] =
         curr_city = sample['linqmap_city']
         curr_street = sample['linqmap_street']
         found_district = False
@@ -182,7 +211,7 @@ def process_city_street(df: pd.DataFrame, geo: bool) -> None:
                 found_district = True
                 break
         if not found_district:
-                df['linqmap_city'][index] = 'Out of district'
+            df['linqmap_city'][index] = 'Out of district'
 
         # update street
         if curr_street != 0:
@@ -225,8 +254,7 @@ def process_city_street(df: pd.DataFrame, geo: bool) -> None:
         printProgressBar(i + 1, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
 
 
-
-def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -249,7 +277,33 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 
 
 def make_dummies(df: pd.DataFrame) -> pd.DataFrame:
-    return pd.get_dummies(data=df, columns=FEATURES_TO_DUMMIES)
+    data = pd.get_dummies(data=df, columns=FEATURES_TO_DUMMIES)
+    start_str = "day_of_week_"
+    for i in range(7):
+        title = start_str + str(i)
+        if title not in df.columns:
+            data[title] = np.zeros(df.shape[0]).astype(int)
+    start_str = "hour_in_day_"
+    for i in range(24):
+        title = start_str + str(i)
+        if title not in df.columns:
+            data[title] = np.zeros(df.shape[0]).astype(int)
+    start_str = "linqmap_roadType_"
+    for i in range(23):
+        title = start_str + str(i)
+        if title not in df.columns:
+            data[title] = np.zeros(df.shape[0]).astype(int)
+    start_str = "linqmap_type_"
+    for i in types.keys():
+        title = start_str + str(i)
+        if title not in df.columns:
+            data[title] = np.zeros(df.shape[0]).astype(int)
+    start_str = "linqmap_subtype_"
+    for i in subtypes.keys():
+        title = start_str + str(i)
+        if title not in df.columns:
+            data[title] = np.zeros(df.shape[0]).astype(int)
+    return data
 
 
 def preprocess(df: pd.DataFrame, geo: bool):
@@ -260,11 +314,21 @@ def preprocess(df: pd.DataFrame, geo: bool):
     process_weatherhazard(df)
     process_city_street(df, geo)
     remove_diluted_features(df)
-    tel_aviv_data = df[df["linqmap_city"] == "Tel Aviv District"]
+    types_col = df["linqmap_type"]
+    subtypes_col = df["linqmap_subtype"]
+    dummies_data = make_dummies(df)
+    dummies_data["linqmap_type"] = types_col
+    dummies_data["linqmap_subtype"] = subtypes_col
+
+    return dummies_data
+
+
+    tel_aviv_data = dummies_data[dummies_data["linqmap_city_Tel Aviv District"] == 1]
     tel_aviv_data.sort_values(by=['update_time'], inplace=True)
-    tel_aviv_data.drop(['update_time'], axis=1, inplace=True)
+    tel_aviv_data.drop(['update_time', 'linqmap_city', 'linqmap_street', 'x', 'y'], axis=1, inplace=True)
+    tel_aviv_data['linqmap_type'] = pd.factorize(tel_aviv_data['linqmap_type'])[0]
+    tel_aviv_data['linqmap_subtype'] = pd.factorize(tel_aviv_data['linqmap_subtype'])[0]
     y = pd.factorize(tel_aviv_data['linqmap_subtype'])[0]
     y_compress = y[4:df.shape[0]]
-    data = make_dummies(tel_aviv_data)
-    return compress_4_rows_into_one(data), y_compress
-
+    # data = make_dummies(tel_aviv_data)
+    return tel_aviv_data, y
