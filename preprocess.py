@@ -123,7 +123,7 @@ def add_accident_type(df: pd.DataFrame):
     # fig.show()
 
 
-def process_city_street(df: pd.DataFrame, geo: bool):
+def process_city_street(df: pd.DataFrame, geo: bool) -> pd.DataFrame:
     df['linqmap_street'].fillna(0, inplace=True)
     n_samples = df.shape[0]
     printProgressBar(0, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
@@ -179,7 +179,8 @@ def process_city_street(df: pd.DataFrame, geo: bool):
                     df['linqmap_street'][index] = geo_road
 
         printProgressBar(i + 1, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
-
+    city_dummies = pd.get_dummies(df['linqmap_city'])
+    return pd.concat([df, city_dummies], axis=1)
 
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
     """
@@ -203,10 +204,10 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
         print()
 
 
-def preprocess(df: pd.DataFrame, geo: bool) -> None:
+def preprocess(df: pd.DataFrame, geo: bool) -> pd.DataFrame:
     add_accident_type(df)
     convert_dates(df)
     convert_coordinates(df)
     categorize_linqmap_city(df)
     remove_diluted_features(df)
-    process_city_street(df, geo)
+    return process_city_street(df, geo)
