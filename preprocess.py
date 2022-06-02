@@ -1,34 +1,31 @@
+import typing
 from datetime import datetime
 import pandas as pd
 import numpy as np
+from geopy.distance import distance
 from pyproj import CRS
 from pyproj import Transformer
 import plotly.express as px
+from geopy.geocoders import Nominatim
 
 EMPTY = ['linqmap_reportDescription', 'linqmap_nearby',
          'linqmap_expectedBeginDate', 'linqmap_expectedEndDate', 'OBJECTID',
          'nComments', 'linqmap_reportMood']
+LOCATION_TIMEOUT = 6
 
 
 def convert_dates(data: pd.DataFrame) -> None:
-    # dates = np.array(data['update_date'])
-    # data['update_date2'] = pd.Series(
-    #     [datetime.fromtimestamp(time / 1000) for time in dates])
-    data['update_date2'] = pd.to_datetime(data['update_date'], unit='ms')
-    print("test")
+    dts = pd.to_datetime(data['update_date'], unit='ms')
+    data['update_date'] = [dt.date() for dt in dts]
+    data['update_time'] = [dt.time() for dt in dts]
 
 
 def convert_coordinates(data) -> None:
     X = pd.Series.to_numpy(data['x'])
     Y = pd.Series.to_numpy(data['y'])
 
-    crs = CRS.from_epsg(6991)
-    crs.to_epsg()
-    crs = CRS.from_proj4(
-        "+proj=tmerc +lat_0=31.7343936111111 +lon_0=35.2045169444445 "
-        "+k=1.0000067 +x_0=219529.584 +y_0=626907.39 +ellps=GRS80 "
-        "+towgs84=-24.002400,-17.103200,-17.844400,-0.33007,-1.852690,"
-        "1.669690,5.424800 +units=m +no_defs")
+    # crs = CRS.from_epsg(6991)
+    # crs.to_epsg()
     transformer = Transformer.from_crs("EPSG:6991", "EPSG:4326")
     wgs84_coords = [transformer.transform(X[i], Y[i]) for i in range(len(X))]
     data['y'] = [tup[0] for tup in wgs84_coords]
@@ -64,6 +61,37 @@ def remove_diluted_features(df: pd.DataFrame,
     features += ['OBJECTID', 'nComments']
     df.drop(EMPTY, axis=1, inplace=True)
     return features
+
+
+# def geolocator(coordinates: str) -> str:
+#     """Return location coordinates and accurate address of the specified location."""
+#     geolocator = Nominatim(user_agent="tutorial", timeout=LOCATION_TIMEOUT)
+#     try:
+#         location = geolocator.reverse(coordinates)
+#         if location is not None:
+#             return location.address
+#     except GeocoderTimedOut as e:
+#         print(str(e))
+#     return ""
+
+def get_nearest_location(x: float, y: float, df: pd.DataFrame) -> typing.Tuple[str, str]:
+    x, y = float(x), float(y)
+    min_dist = float('inf')
+    city = ""
+    street = ""
+    for index, row in df.iterrows():
+        x1, y1 = float(row['x']), float(row['y'])
+        if x == x1 and y == y1:
+            continue
+        c1 = (y, x)
+        c2 = (y1, x1)
+        dist = distance(c1, c2)
+        curr_city, curr_street = row['linqmap_city'], row['linqmap_street']
+        if dist < min_dist and (curr_city or curr_street) and (
+                curr_city is not np.nan or curr_street is not np.nan):
+            city, street = curr_city, curr_street
+            min_dist = dist
+    return city, street
 
 
 def add_accident_type(df: pd.DataFrame):
