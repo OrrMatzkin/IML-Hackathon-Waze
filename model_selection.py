@@ -14,9 +14,7 @@ import plotly.graph_objects as go
 from preprocess import *
 
 def model_selection(train_data, train_y):
-
     train_X, valid_X, train_y, valid_y = train_test_split(train_data, train_y, test_size=0.2, shuffle=True)
-
     try_simply_evaluation(train_X, train_y, valid_X, valid_y)
     # major_vote(train_data)
     print(f"found k: {kfold_cv(train_X, train_y, valid_X, valid_y)}")
