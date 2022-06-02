@@ -18,7 +18,7 @@ FEATURES_TO_DUMMIES = ['linqmap_subtype', 'linqmap_roadType', 'linqmap_type', 'l
                        'linqmap_roadType', 'linqmap_roadType', 'linqmap_roadType', 'day_of_week', 'hour_in_day']
 
 DISTRICTS_OF_ISRAEL = {"North District": ['בית שאן', 'טבריה', 'טמרה', 'יקנעם עלית', 'כרמיאל', 'מגדל העמק',
-                                          "מע'אר", 'מעלות תרשיחא', 'נהריה', 'נוף הגליל', 'נצרת', "סחנין"
+                                          "מע'אר", 'מעלות תרשיחא', 'נהריה', 'נוף הגליל', 'נצרת', "סחנין",
                                                                                                  'עראבה', 'עכו',
                                           'עפולה', 'צפת', 'קריית שמונה', 'שפרעם'],
                        "Haifa District": ['אום אל - פאחם', 'אור עקיבא', 'באקה אל גרביה', 'חדרה', 'חיפה', 'טירת כרמל',
@@ -200,7 +200,6 @@ def process_city_street(df: pd.DataFrame, geo: bool) -> None:
     n_samples = df.shape[0]
     printProgressBar(0, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
     for i, (index, sample) in enumerate(df.iterrows()):
-        # df['linqmap_type'][index] =
         curr_city = sample['linqmap_city']
         curr_street = sample['linqmap_street']
         found_district = False
@@ -319,6 +318,10 @@ def preprocess(df: pd.DataFrame, geo: bool):
     dummies_data = make_dummies(df)
     dummies_data["linqmap_type"] = types_col
     dummies_data["linqmap_subtype"] = subtypes_col
+    y_for_x_evaluation = tel_aviv_data['x']
+    y_for_x_evaluation = y_for_x_evaluation[4:df.shape[0]]
+    y_for_y_evaluation = tel_aviv_data['y']
+    y_for_y_evaluation = y_for_y_evaluation[4:df.shape[0]]
 
     return dummies_data
 
@@ -329,6 +332,13 @@ def preprocess(df: pd.DataFrame, geo: bool):
     tel_aviv_data['linqmap_type'] = pd.factorize(tel_aviv_data['linqmap_type'])[0]
     tel_aviv_data['linqmap_subtype'] = pd.factorize(tel_aviv_data['linqmap_subtype'])[0]
     y = pd.factorize(tel_aviv_data['linqmap_subtype'])[0]
+    y_for_x_evaluation = tel_aviv_data['x']
+    y_for_x_evaluation = y_for_x_evaluation[4:df.shape[0]]
+    y_for_y_evaluation = tel_aviv_data['y']
+    y_for_y_evaluation = y_for_y_evaluation[4:df.shape[0]]
     y_compress = y[4:df.shape[0]]
     # data = make_dummies(tel_aviv_data)
     return tel_aviv_data, y
+    data = make_dummies(tel_aviv_data)
+    return compress_4_rows_into_one(data), y_compress, y_for_x_evaluation, y_for_y_evaluation
+

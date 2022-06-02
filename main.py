@@ -9,6 +9,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import plotly.graph_objects as go
 from sklearn.neighbors import KNeighborsRegressor
 
+from evaluate_x_y import check_evaluate_x_y
 from model_selection import model_selection
 from preprocess import *
 
