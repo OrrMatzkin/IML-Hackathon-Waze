@@ -1,4 +1,6 @@
 import typing
+from datetime import datetime
+
 import pandas as pd
 import numpy as np
 import re
@@ -50,6 +52,29 @@ def convert_coordinates(data) -> None:
     data['y'] = [tup[0] for tup in wgs84_coords]
     data['x'] = [tup[1] for tup in wgs84_coords]
 
+
+
+def categorize_linqmap_city(df: pd.DataFrame):
+    pd.get_dummies(df, columns=['linqmap_city'])
+
+
+def compress_4_rows_into_one(df: pd.DataFrame):
+    # make list of sub lists with 4 samples
+    list_of_4_rows = [[df.iloc[i + j, :] for j in range(4)] for i in range(df.shape[0]-4)]
+    # concat each sub list to become one sample
+    train_X = pd.DataFrame([pd.concat(four_rows, axis=0, ignore_index=True) for four_rows in list_of_4_rows])
+
+    train_y = df.loc[:, ["linqmap_subtype"]]
+    train_y = train_y[4:df.shape[0]]
+
+    return train_X, train_y
+
+def categorize_subtype(df: pd.DataFrame):
+    df['linqmap_subtype'] = pd.factorize(df['linqmap_subtype'])[0] + 1
+    df['linqmap_type'] = pd.factorize(df['linqmap_type'])[0] + 1
+    df['linqmap_street'] = pd.factorize(df['linqmap_street'])[0] + 1
+    df['linqmap_city'] = pd.factorize(df['linqmap_city'])[0] + 1
+    a = 5
 
 def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
     df.drop_duplicates(subset=['OBJECTID'], inplace=True)
@@ -132,6 +157,7 @@ def process_jam(df):
         delta_time = same_date_and_place['update_date'].apply(lambda x: np.abs((x - row['update_date'])))
         closest = same_date_and_place.loc[delta_time.idxmin()]
         df.at[idx, 'linqmap_subtype'] = closest['linqmap_subtype']
+
 
 
 def process_weatherhazard(df):

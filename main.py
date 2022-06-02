@@ -8,7 +8,9 @@ from sklearn.neighbors import KNeighborsClassifier
 import plotly.graph_objects as go
 from sklearn.neighbors import KNeighborsRegressor
 
+from model_selection import model_selection
 from preprocess import *
+
 
 
 def cross_validation(estimator, X_train, y_train, k_range):
@@ -23,6 +25,7 @@ def cross_validation(estimator, X_train, y_train, k_range):
     selected_error = cv_errors[min_ind]
 
     return selected_k, selected_error
+
 
 
 def generate_pearson_correlation_heatmap(df):
@@ -40,4 +43,5 @@ if __name__ == '__main__':
     raw_data = pd.read_csv("waze_data.csv")
     train_data, test_data = train_test_split(raw_data, test_size=.2, random_state=42)
     preprocess_data = preprocess(train_data, True if geolocator_use == "-g" else False)
+    model_selection(preprocess_data)
     print("done")
