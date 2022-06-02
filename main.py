@@ -1,13 +1,10 @@
-import sys
-
-import numpy as np
-
-from load_data import load_data
-from preprocess_data import preprocess_data
+from sklearn.model_selection import train_test_split
+import pandas as pd
+from preprocess import *
 
 if __name__ == '__main__':
-    print("GOOD LUCK")
     np.random.seed(0)
-    X_train, X_test = load_data(f"waze_data.csv")
-    preprocess_data(X_train)
-    a = 5
+    raw_data = pd.read_csv("waze_data.csv")
+    train_data, test_data = train_test_split(raw_data, test_size=.2, random_state=42)
+    preprocess(train_data)
+    print("done")
