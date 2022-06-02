@@ -41,6 +41,18 @@ def process_pubDate(df: pd.DataFrame):
     df['pubDate_day_of_week'] = df['pubDate'].dt.dayofweek  # hour as int from 0 to 24
     return df
 
+
+def compress_4_rows_into_one(df: pd.DataFrame):
+    # make list of sub lists with 4 samples
+    list_of_4_rows = [[df.iloc[i + j, :] for j in range(4)] for i in range(1000)]
+    # concat each sub list to become one sample
+    train_X = pd.DataFrame([pd.concat(four_rows, axis=0, ignore_index=True) for four_rows in list_of_4_rows])
+
+    train_y = df.loc[:, ["linqmap_subtype"]]
+    train_y = train_y[4:1004]
+
+    return train_X, train_y
+
 def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
     df.drop_duplicates(subset=['OBJECTID'], inplace=True)
     features = []
@@ -65,17 +77,6 @@ def add_accident_type(df: pd.DataFrame):
     # ROAD_CLOSED_type = df[df["linqmap_type"] == "ROAD_CLOSED"]
     # fig = px.scatter(ROAD_CLOSED_type, x="linqmap_street", y="linqmap_subtype")
     # fig.show()
-
-def compress_4_rows_into_one(df: pd.DataFrame):
-    # make list of sub lists with 4 samples
-    list_of_4_rows = [[df.iloc[i+j, :] for j in range(4)] for i in range(1000)]
-    # concat each sub list to become one sample
-    train_X = pd.DataFrame([pd.concat(four_rows, axis=0, ignore_index=True) for four_rows in list_of_4_rows])
-    
-    train_y = df.loc[:, ["linqmap_subtype"]]
-    train_y = train_y[4:1004]
-
-    return train_X, train_y
 
 def preprocess(df: pd.DataFrame) -> None:
     add_accident_type(df)
