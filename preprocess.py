@@ -44,12 +44,12 @@ def process_pubDate(df: pd.DataFrame):
 
 def compress_4_rows_into_one(df: pd.DataFrame):
     # make list of sub lists with 4 samples
-    list_of_4_rows = [[df.iloc[i + j, :] for j in range(4)] for i in range(1000)]
+    list_of_4_rows = [[df.iloc[i + j, :] for j in range(4)] for i in range(df.shape[0]-4)]
     # concat each sub list to become one sample
     train_X = pd.DataFrame([pd.concat(four_rows, axis=0, ignore_index=True) for four_rows in list_of_4_rows])
 
     train_y = df.loc[:, ["linqmap_subtype"]]
-    train_y = train_y[4:1004]
+    train_y = train_y[4:df.shape[0]]
 
     return train_X, train_y
 
