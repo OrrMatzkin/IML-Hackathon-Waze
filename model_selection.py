@@ -6,7 +6,7 @@ import re
 from geopy.distance import distance
 from pyproj import Transformer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, mean_squared_error
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 import plotly.graph_objects as go
@@ -25,10 +25,14 @@ def try_simply_evaluation(train_X, train_y, test_X, test_y):
     model = KNeighborsClassifier(n_neighbors=9).fit(train_X, train_y)
     y_pred = model.predict(train_X)
     score = f1_score(train_y, y_pred, average='micro')
-    print(f"value in KNN on the train set: {score}")
+    print(f"value in KNN on the train set with f1: {score}")
+    score = mean_squared_error(train_y, y_pred)
+    print(f"value in KNN on the train set with MSE: {score}")
     y_pred = model.predict(test_X)
     score = f1_score(test_y, y_pred, average='micro')
     print(f"value in KNN on the test set: {score}")
+    score = mean_squared_error(test_y, y_pred)
+    print(f"value in KNN on the train set with MSE: {score}")
 
 # def major_vote(df):
 #     list_of_4_rows = [[df.iloc[i+j]['linqmap_subtype'] for j in range(4)] for i in range(1000)]
