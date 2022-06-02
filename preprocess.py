@@ -12,7 +12,7 @@ from pyproj import Transformer
 FEATURES_TO_DROP = ['linqmap_reportDescription', 'linqmap_nearby',
                     'linqmap_expectedBeginDate', 'linqmap_expectedEndDate', 'OBJECTID', 'nComments',
                     'linqmap_reportMood', 'linqmap_magvar', 'update_date_new', 'update_date',
-                    'update_time', 'pubDate', 'linqmap_type']
+                    'pubDate', 'linqmap_type']
 
 FEATURES_TO_DUMMIES = ['linqmap_subtype', 'linqmap_city', 'linqmap_street', 'linqmap_roadType',
                         'linqmap_roadType', 'linqmap_roadType', 'linqmap_roadType', 'day_of_week', 'hour_in_day']
@@ -64,17 +64,14 @@ def compress_4_rows_into_one(df: pd.DataFrame):
     # concat each sub list to become one sample
     train_X = pd.DataFrame([pd.concat(four_rows, axis=0, ignore_index=True) for four_rows in list_of_4_rows])
 
-    train_y = df.loc[:, ["linqmap_subtype"]]
-    train_y = train_y[4:df.shape[0]]
-
-    return train_X, train_y
+    return train_X
 
 def categorize_subtype(df: pd.DataFrame):
     df['linqmap_subtype'] = pd.factorize(df['linqmap_subtype'])[0] + 1
     df['linqmap_type'] = pd.factorize(df['linqmap_type'])[0] + 1
     df['linqmap_street'] = pd.factorize(df['linqmap_street'])[0] + 1
     df['linqmap_city'] = pd.factorize(df['linqmap_city'])[0] + 1
-    a = 5
+
 
 def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
     df.drop_duplicates(subset=['OBJECTID'], inplace=True)
@@ -255,7 +252,7 @@ def make_dummies(df: pd.DataFrame) -> pd.DataFrame:
     return pd.get_dummies(data=df, columns=FEATURES_TO_DUMMIES)
 
 
-def preprocess(df: pd.DataFrame, geo: bool) -> pd.DataFrame:
+def preprocess(df: pd.DataFrame, geo: bool):
     convert_dates(df)
     process_accident(df)
     process_road_closed(df)
@@ -263,6 +260,11 @@ def preprocess(df: pd.DataFrame, geo: bool) -> pd.DataFrame:
     process_weatherhazard(df)
     process_city_street(df, geo)
     remove_diluted_features(df)
-    data = make_dummies(df)
-    return data
+    tel_aviv_data = df[df["linqmap_city"] == "Tel Aviv District"]
+    tel_aviv_data.sort_values(by=['update_time'], inplace=True)
+    tel_aviv_data.drop(['update_time'], axis=1, inplace=True)
+    y = pd.factorize(tel_aviv_data['linqmap_subtype'])[0]
+    y_compress = y[4:df.shape[0]]
+    data = make_dummies(tel_aviv_data)
+    return compress_4_rows_into_one(data), y_compress
 
