@@ -1,3 +1,4 @@
+from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 import sys
 import warnings
@@ -49,6 +50,11 @@ def cross_validation(estimator, X_train, y_train, X_test, y_test, k_range):
 
     return selected_k, selected_error
 
+
+def get_knn_model(X_train: np.ndarray, y_train: np.ndarray, k: int) -> KNeighborsClassifier:
+    model = KNeighborsClassifier(n_neighbors=k)
+    model.fit(X_train, y_train)
+    return model
 
 
 def generate_pearson_correlation_heatmap(df):
