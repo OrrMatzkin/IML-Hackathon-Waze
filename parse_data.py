@@ -14,9 +14,7 @@ def make_train_data(pre_process_df, not_processes_df):
     x_labels = shift4_for_labels['x']
     y_labels = shift4_for_labels['y']
 
-    test = flatted_4_samples.iloc[:-3]
-
-    return flatted_4_samples, type_labels, subtype_labels, x_labels, y_labels
+    return flatted_4_samples.iloc[:-4], type_labels.iloc[:-4], subtype_labels.iloc[:-4], x_labels.iloc[:-4], y_labels.iloc[:-4]
 
 
 

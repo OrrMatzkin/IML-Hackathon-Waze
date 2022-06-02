@@ -2,7 +2,7 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 import sys
 import warnings
-
+from parse_data import *
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
@@ -77,14 +77,8 @@ if __name__ == '__main__':
     tel_aviv_data.drop(['update_date'], axis=1, inplace=True)
     tel_aviv_data_for_samples = tel_aviv_data.drop(['x', 'y', 'linqmap_type', 'linqmap_subtype'], axis=1)
     X, y_type, y_subtype, y_x, y_y = make_train_data(tel_aviv_data_for_samples, tel_aviv_data)
-    train_X, valid_X, train_y, valid_y = train_test_split(preprocess_data, preprocess_y, test_size=0.2, shuffle=True)
-    # train_X_dummies = make_dummies(train_X)
-    # y_flatten = train_y[4:train_y.shape[0]]
-    # train_X_flatten = compress_4_rows_into_one(train_X_dummies)
-    #
-    # valid_X_dummies = make_dummies(valid_X)
-    # valid_y_flatten = valid_y[4:valid_y.shape[0]]
-    # valid_X_flatten = compress_4_rows_into_one(valid_X_dummies)
+    train_X, valid_X, train_y_type, valid_y_type, train_y_subtype, valid_y_subtype, train_y_x, valid_y_x, train_y_y, valid_y_y = train_test_split(X, y_type, y_subtype, y_x, y_y, test_size=0.2, random_state=42,  shuffle=True)
+
 
     selected_k, selected_error = cross_validation(KNeighborsClassifier, train_X_flatten, y_flatten ,valid_X_flatten, valid_y_flatten, np.linspace(1, 20, 10).astype(int))
     type_model = get_knn_model(train_X_flatten, y_flatten,valid_X_flatten, valid_y_flatten, selected_k)
