@@ -5,15 +5,22 @@ from pyproj import CRS
 from pyproj import Transformer
 import plotly.express as px
 
-EMPTY = ['linqmap_reportDescription', 'linqmap_nearby', 'linqmap_expectedBeginDate', 'linqmap_expectedEndDate', 'OBJECTID', 'nComments', 'linqmap_reportMood']
+EMPTY = ['linqmap_reportDescription', 'linqmap_nearby',
+         'linqmap_expectedBeginDate', 'linqmap_expectedEndDate', 'OBJECTID',
+         'nComments', 'linqmap_reportMood']
+
+
 def convert_dates(data: pd.DataFrame) -> None:
-    dates = data['update_date']
-    data['update_date'] = pd.Series([datetime.fromtimestamp(time / 1000) for time in dates])
+    # dates = np.array(data['update_date'])
+    # data['update_date2'] = pd.Series(
+    #     [datetime.fromtimestamp(time / 1000) for time in dates])
+    data['update_date2'] = pd.to_datetime(data['update_date'], unit='ms')
+    print("test")
 
 
 def convert_coordinates(data) -> None:
-    X = np.array(data['x'])
-    Y = np.array(data['y'])
+    X = pd.Series.to_numpy(data['x'])
+    Y = pd.Series.to_numpy(data['y'])
 
     crs = CRS.from_epsg(6991)
     crs.to_epsg()
@@ -24,13 +31,12 @@ def convert_coordinates(data) -> None:
         "1.669690,5.424800 +units=m +no_defs")
     transformer = Transformer.from_crs("EPSG:6991", "EPSG:4326")
     wgs84_coords = [transformer.transform(X[i], Y[i]) for i in range(len(X))]
-    data['y'] = pd.Series([tup[0] for tup in wgs84_coords])
-    data['x'] = pd.Series([tup[1] for tup in wgs84_coords])
+    data['y'] = [tup[0] for tup in wgs84_coords]
+    data['x'] = [tup[1] for tup in wgs84_coords]
 
 
 def categorize_linqmap_city(df: pd.DataFrame):
     pd.get_dummies(df, columns=['linqmap_city'])
-
 
 
 def process_pubDate(df: pd.DataFrame):
@@ -46,7 +52,8 @@ def process_pubDate(df: pd.DataFrame):
     return df
 
 
-def remove_diluted_features(df: pd.DataFrame, diluted_proportion: float = .9) -> list:
+def remove_diluted_features(df: pd.DataFrame,
+                            diluted_proportion: float = .9) -> list:
     df.drop_duplicates(subset=['OBJECTID'], inplace=True)
     features = []
     n_samples = df.shape[0]
@@ -63,9 +70,11 @@ def add_accident_type(df: pd.DataFrame):
     # most major accidents happened outside of city, so if 'linqmap_subtype' is null and is outside of the city, put 'ACCIDENT_MAJOR', and 'ACCIDENT_MINOR' otherwise
     accident_type = df[df["linqmap_type"] == "ACCIDENT"]
     accident_type['linqmap_subtype'].mask(
-        accident_type['linqmap_subtype'].isna() & accident_type["linqmap_city"].isna(), 'ACCIDENT_MAJOR', inplace=True)
+        accident_type['linqmap_subtype'].isna() & accident_type[
+            "linqmap_city"].isna(), 'ACCIDENT_MAJOR', inplace=True)
     accident_type['linqmap_subtype'].mask(
-        accident_type['linqmap_subtype'].isna() & ~accident_type["linqmap_city"].isna(), 'ACCIDENT_MINOR', inplace=True)
+        accident_type['linqmap_subtype'].isna() & ~accident_type[
+            "linqmap_city"].isna(), 'ACCIDENT_MINOR', inplace=True)
 
     # ROAD_CLOSED_type = df[df["linqmap_type"] == "ROAD_CLOSED"]
     # fig = px.scatter(ROAD_CLOSED_type, x="linqmap_street", y="linqmap_subtype")
@@ -74,9 +83,7 @@ def add_accident_type(df: pd.DataFrame):
 
 def preprocess(df: pd.DataFrame) -> None:
     add_accident_type(df)
-    convert_dates(df)
-    convert_coordinates(df)
     categorize_linqmap_city(df)
     remove_diluted_features(df)
-
-
+    convert_dates(df)
+    convert_coordinates(df)
