@@ -1,10 +1,29 @@
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 import pandas as pd
+from sklearn.neighbors import KNeighborsClassifier
+
 from preprocess import *
+
+
+def kfold_cv(X_train, y_train):
+    k_range = np.linspace(1, 10, 1)
+    param_grid = {'n_neighbors': k_range}
+    knn_cv = GridSearchCV(KNeighborsClassifier(), param_grid, cv=5).fit(
+        X_train, y_train)
+    cv_errors = 1 - knn_cv.cv_results_["mean_test_score"]
+    # std = knn_cv.cv_results_["std_test_score"]
+
+    min_ind = np.argmin(np.array(cv_errors))
+    selected_k = np.array(k_range)[min_ind]
+    selected_error = cv_errors[min_ind]
+
+    return selected_k, selected_error
+
 
 if __name__ == '__main__':
     np.random.seed(0)
     raw_data = pd.read_csv("waze_data.csv")
-    train_data, test_data = train_test_split(raw_data, test_size=.2, random_state=42)
+    train_data, test_data = train_test_split(raw_data, test_size=.2,
+                                             random_state=42)
     preprocess(train_data)
     print("done")
