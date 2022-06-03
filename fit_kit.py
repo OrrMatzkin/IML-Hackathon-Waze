@@ -44,7 +44,7 @@ def fit_types_and_subtypes(X_train, y_train_type, y_train_subtype):
             continue
         k = cross_validation(KNeighborsClassifier, new_X_train, new_y_train, np.linspace(1, 20, 20).astype(int))[0]
         model = get_knn_model(new_X_train, new_y_train, k)
-        model_sub_types.append((type_name, model, model.predict(new_X_train), new_y_train))
+        model_sub_types.append((type_name, model, model.predict(new_X_train), new_X_train, new_y_train))
     return model_types, y_predict, model_sub_types
 
 
