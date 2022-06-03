@@ -1,11 +1,3 @@
-import typing
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import re
-from geopy.distance import distance
-from pyproj import Transformer
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score, mean_squared_error
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
@@ -13,11 +5,13 @@ import plotly.graph_objects as go
 
 from preprocess import *
 
+
 def model_selection(train_data, train_y):
     train_X, valid_X, train_y, valid_y = train_test_split(train_data, train_y, test_size=0.2, shuffle=True)
     try_simply_evaluation(train_X, train_y, valid_X, valid_y)
     # major_vote(train_data)
     print(f"found k: {kfold_cv(train_X, train_y, valid_X, valid_y)}")
+
 
 def try_simply_evaluation(train_X, train_y, test_X, test_y):
     model = KNeighborsClassifier(n_neighbors=9).fit(train_X, train_y)
@@ -32,13 +26,6 @@ def try_simply_evaluation(train_X, train_y, test_X, test_y):
     score = mean_squared_error(test_y, y_pred)
     print(f"value in KNN on the train set with MSE: {score}")
 
-# def major_vote(df):
-#     list_of_4_rows = [[df.iloc[i+j]['linqmap_subtype'] for j in range(4)] for i in range(1000)]
-#     y_pred = [max(set(cur_list), key=cur_list.count) for cur_list in list_of_4_rows]
-#     y = df.loc[:, ["linqmap_subtype"]]
-#     y = y[4:1004]
-#     score = f1_score(y, y_pred, average='macro')
-#     print(f"value of major vote: {score}")
 
 def kfold_cv(X_train, y_train, X_test, y_test):
     k_range = np.linspace(1, 20, 20).astype(int)
@@ -73,7 +60,5 @@ def kfold_cv(X_train, y_train, X_test, y_test):
         .update_layout(title=r"$\text{(4) }k\text{-NN Errors - Selection By Cross-Validation}$",
                        xaxis_title=r"$k\text{ - Number of Neighbors}$",
                        yaxis_title=r"$\text{Error Value}$").show()
-    a = 5
-
 
     return selected_k, selected_error

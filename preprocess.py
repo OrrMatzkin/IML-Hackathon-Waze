@@ -1,6 +1,4 @@
 import typing
-from datetime import datetime
-
 import pandas as pd
 import numpy as np
 import re
@@ -297,26 +295,5 @@ def preprocess(df: pd.DataFrame, bar_name: str):
     dummies_data = make_dummies(df)
     dummies_data["linqmap_type"] = types_col
     dummies_data["linqmap_subtype"] = subtypes_col
-
     return dummies_data
-
-    # y_for_x_evaluation = tel_aviv_data['x']
-    # y_for_x_evaluation = y_for_x_evaluation[4:df.shape[0]]
-    # y_for_y_evaluation = tel_aviv_data['y']
-    # y_for_y_evaluation = y_for_y_evaluation[4:df.shape[0]]
-    tel_aviv_data = dummies_data[dummies_data["linqmap_city_Tel Aviv District"] == 1]
-    tel_aviv_data.sort_values(by=['update_time'], inplace=True)
-    tel_aviv_data.drop(['update_time', 'linqmap_city', 'linqmap_street', 'x', 'y'], axis=1, inplace=True)
-    tel_aviv_data['linqmap_type'] = pd.factorize(tel_aviv_data['linqmap_type'])[0]
-    tel_aviv_data['linqmap_subtype'] = pd.factorize(tel_aviv_data['linqmap_subtype'])[0]
-    y = pd.factorize(tel_aviv_data['linqmap_subtype'])[0]
-    y_for_x_evaluation = tel_aviv_data['x']
-    y_for_x_evaluation = y_for_x_evaluation[4:df.shape[0]]
-    y_for_y_evaluation = tel_aviv_data['y']
-    y_for_y_evaluation = y_for_y_evaluation[4:df.shape[0]]
-    y_compress = y[4:df.shape[0]]
-    # data = make_dummies(tel_aviv_data)
-    return tel_aviv_data, y
-    data = make_dummies(tel_aviv_data)
-    return compress_4_rows_into_one(data), y_compress, y_for_x_evaluation, y_for_y_evaluation
 

@@ -1,0 +1,13 @@
+Project IML Hackathon Wize
+
+file:
+main.py - The file that run the program.
+evaluate_x_y.py - fit and predict the x, y coordinates.
+fit_kit.py - fit the models for type and subtype.
+model_selection - evaluate models for type and subtype.
+parse_data - organize the samples and labels for the models.
+task1.py - analyze and finding the result for the first task.
+task2.py - analyze and finding the result for the second task.
+requirements.txt - Python libraries needed for this project.
+USERS - our cse users names.
+README - this file.

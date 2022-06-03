@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def make_train_data(pre_process_df: pd.DataFrame, not_processes_df: pd.DataFrame):
     no_shift = pre_process_df
     shift1 = pre_process_df.shift(periods=-1)
