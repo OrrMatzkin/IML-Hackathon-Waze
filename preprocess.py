@@ -1,3 +1,4 @@
+import copy
 import typing
 from datetime import datetime
 
@@ -9,13 +10,18 @@ from geopy.distance import distance
 from geopy.exc import GeocoderTimedOut
 from pyproj import Transformer
 
+import event_distribution_prediction
+
 FEATURES_TO_DROP = ['linqmap_reportDescription', 'linqmap_nearby',
                     'linqmap_expectedBeginDate', 'linqmap_expectedEndDate', 'OBJECTID', 'nComments',
                     'linqmap_reportMood', 'linqmap_magvar', 'update_date_new', 'update_date',
-                    'pubDate', 'linqmap_type']
+                    'pubDate']
 
-FEATURES_TO_DUMMIES = ['linqmap_subtype', 'linqmap_city', 'linqmap_street', 'linqmap_roadType',
-                        'linqmap_roadType', 'linqmap_roadType', 'linqmap_roadType', 'day_of_week', 'hour_in_day']
+FEATURES_TO_DUMMIES = ['linqmap_subtype', 'linqmap_city', 'linqmap_street', 'linqmap_type',
+                       'linqmap_roadType', 'day_of_week', 'hour_in_day']
+
+FEATURES_TO_DUMMIES_T2 = ['linqmap_city', 'linqmap_street', 'linqmap_roadType',
+                          'linqmap_roadType']
 
 DISTRICTS_OF_ISRAEL = {"North District": ['בית שאן', 'טבריה', 'טמרה', 'יקנעם עלית', 'כרמיאל', 'מגדל העמק',
                                           "מע'אר", 'מעלות תרשיחא', 'נהריה', 'נוף הגליל', 'נצרת', "סחנין"
@@ -37,11 +43,19 @@ LOCATION_TIMEOUT = 6
 
 
 def convert_dates(df: pd.DataFrame) -> None:
-    dts = pd.to_datetime(df['update_date'], unit='ms')
+    dts = pd.to_datetime(df['update_date'], infer_datetime_format=True, unit="ms").dt.tz_localize('UTC').dt.tz_convert('Israel')
     df['update_date_new'] = [dt.date() for dt in dts]
     df['update_time'] = [dt.time() for dt in dts]
     df['hour_in_day'] = dts.dt.hour  # hour as int from 0 to 24
     df['day_of_week'] = dts.dt.dayofweek  # hour as int from 0 to 24
+
+
+def convert_dates_task2(df: pd.DataFrame) -> None:
+    dts = pd.to_datetime(df['pubDate']).dt.tz_localize('UTC').dt.tz_convert('Israel')
+    df['update_date_new'] = [dt.date() for dt in dts]
+    df['update_time'] = [dt.time() for dt in dts]
+    df['hour_in_day'] = dts.dt.hour  # hour as int from 0 to 24
+    df['day_of_week'] = dts.dt.dayofweek
 
 
 def convert_coordinates(data) -> None:
@@ -252,6 +266,10 @@ def make_dummies(df: pd.DataFrame) -> pd.DataFrame:
     return pd.get_dummies(data=df, columns=FEATURES_TO_DUMMIES)
 
 
+def make_dummies_task2(df: pd.DataFrame) -> pd.DataFrame:
+    return pd.get_dummies(data=df, columns=FEATURES_TO_DUMMIES_T2)
+
+
 def preprocess(df: pd.DataFrame, geo: bool):
     convert_dates(df)
     process_accident(df)
@@ -260,6 +278,7 @@ def preprocess(df: pd.DataFrame, geo: bool):
     process_weatherhazard(df)
     process_city_street(df, geo)
     remove_diluted_features(df)
+
     tel_aviv_data = df[df["linqmap_city"] == "Tel Aviv District"]
     tel_aviv_data.sort_values(by=['update_time'], inplace=True)
     tel_aviv_data.drop(['update_time'], axis=1, inplace=True)
@@ -267,4 +286,27 @@ def preprocess(df: pd.DataFrame, geo: bool):
     y_compress = y[4:df.shape[0]]
     data = make_dummies(tel_aviv_data)
     return compress_4_rows_into_one(data), y_compress
+
+
+def preprocess_task2(df: pd.DataFrame, geo: bool):
+    data = copy.deepcopy(df)
+    convert_dates_task2(data)
+    process_accident(data)
+    process_road_closed(data)
+    process_jam(data)
+    process_weatherhazard(data)
+    process_city_street(data, geo)
+    pubDates = data['pubDate']
+    remove_diluted_features(data)
+    data["pubDate"] = pubDates
+    hours = data['hour_in_day']
+    days = data['day_of_week']
+    data = data.drop(['update_time', 'hour_in_day', 'day_of_week'], axis=1)
+    data = make_dummies_task2(data)
+    data['hour_in_day'], data['day_of_week'] = hours, days
+    event_distribution_prediction.graph_jams_by_hour(data)
+
+
+
+
 
