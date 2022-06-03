@@ -14,8 +14,8 @@ FEATURES_TO_DROP = ['linqmap_reportDescription', 'linqmap_nearby', 'update_time'
                     'linqmap_reportMood', 'linqmap_magvar', 'update_date_new',
                     'pubDate']
 
-FEATURES_TO_DUMMIES = ['linqmap_subtype', 'linqmap_roadType', 'linqmap_type', 'linqmap_city',
-                       'linqmap_roadType', 'linqmap_roadType', 'linqmap_roadType', 'day_of_week', 'hour_in_day']
+FEATURES_TO_DUMMIES = ['linqmap_subtype', 'linqmap_type', 'linqmap_city',
+                        'linqmap_roadType', 'day_of_week', 'hour_in_day']
 
 DISTRICTS_OF_ISRAEL = {"North District": ['בית שאן', 'טבריה', 'טמרה', 'יקנעם עלית', 'כרמיאל', 'מגדל העמק',
                                           "מע'אר", 'מעלות תרשיחא', 'נהריה', 'נוף הגליל', 'נצרת', "סחנין",
@@ -189,16 +189,19 @@ def process_weatherhazard(df):
     weatherhazard_type = df[df["linqmap_type"] == "WEATHERHAZARD"]
     dist = weatherhazard_type.linqmap_subtype.value_counts(normalize=True)
     missing = weatherhazard_type['linqmap_subtype'].isnull()
+    if missing.empty:
+        return
     weatherhazard_type.loc[missing, 'linqmap_subtype'] = np.random.choice(dist.index,
                                                                           size=len(weatherhazard_type[missing]),
                                                                           p=dist.values)
     df['linqmap_subtype'].fillna(weatherhazard_type['linqmap_subtype'], inplace=True)
 
 
-def process_city_street(df: pd.DataFrame, geo: bool) -> None:
+def process_city_street(df: pd.DataFrame, name: str, bar: bool = True) -> None:
     df['linqmap_street'].fillna(0, inplace=True)
     n_samples = df.shape[0]
-    printProgressBar(0, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
+    if bar:
+        printProgressBar(0, n_samples, prefix=f'Preprocessing {name} data:', suffix='Complete', length=50)
     for i, (index, sample) in enumerate(df.iterrows()):
         curr_city = sample['linqmap_city']
         curr_street = sample['linqmap_street']
@@ -217,40 +220,9 @@ def process_city_street(df: pd.DataFrame, geo: bool) -> None:
             road_numbers = re.findall("[0-9]+", curr_street)
             if len(road_numbers) > 0:
                 df['linqmap_street'][index] = int(road_numbers[0])
-            # else:
-            #     iter = re.finditer('ל-', curr_street)
-            #     indices = [m.start(0) for m in iter]
-            #     if len(indices) > 0:
-            #         curr_street = curr_street[::-1]
-            #         curr_street = curr_street[:len(curr_street) - (indices[0] + 2)].strip()[::-1]
-            #         df['linqmap_street'][index] = curr_street
             df['linqmap_street'][index] = "street"
-        # city and street is missing (we search for the nearset coordinates and fill the missing data)
-        if geo:
-            if df['linqmap_city'][index] == 'Out of district' and df['linqmap_street'][index] == 0:
-                x_y = str(df['y'][index]) + ', ' + str(df['x'][index])
-                raw_address = geolocator(x_y)
-                try:
-                    geo_city = raw_address["address"]['city']
-                except KeyError:
-                    df['linqmap_city'][index] = 'Out of district'
-                else:
-                    found_district = False
-                    for district, cities in DISTRICTS_OF_ISRAEL.items():
-                        if geo_city in cities:
-                            df['linqmap_city'][index] = district
-                            found_district = True
-                            break
-                    if not found_district:
-                        df['linqmap_city'][index] = 'Out of district'
-                try:
-                    geo_road = raw_address["address"]['road']
-                except KeyError:
-                    df['linqmap_street'][index] = 0
-                else:
-                    df['linqmap_street'][index] = geo_road
-
-        printProgressBar(i + 1, n_samples, prefix='Preprocessing:', suffix='Complete', length=50)
+        if bar:
+            printProgressBar(i + 1, n_samples, prefix=f'Preprocessing {name} data:', suffix='Complete', length=50)
 
 
 def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
@@ -285,33 +257,40 @@ def make_dummies(df: pd.DataFrame) -> pd.DataFrame:
     start_str = "hour_in_day_"
     for i in range(24):
         title = start_str + str(i)
-        if title not in df.columns:
+        if title not in data.columns:
             data[title] = np.zeros(df.shape[0]).astype(int)
     start_str = "linqmap_roadType_"
     for i in range(23):
         title = start_str + str(i)
-        if title not in df.columns:
+        if title not in data.columns:
             data[title] = np.zeros(df.shape[0]).astype(int)
     start_str = "linqmap_type_"
     for i in types.keys():
         title = start_str + str(i)
-        if title not in df.columns:
+        if title not in data.columns:
             data[title] = np.zeros(df.shape[0]).astype(int)
     start_str = "linqmap_subtype_"
     for i in subtypes.keys():
         title = start_str + str(i)
-        if title not in df.columns:
+        if title not in data.columns:
             data[title] = np.zeros(df.shape[0]).astype(int)
+    start_str = "linqmap_city_"
+    for i in DISTRICTS_OF_ISRAEL.keys():
+        title = start_str + i
+        if title not in data.columns:
+            data[title] = np.zeros(df.shape[0]).astype(int)
+    if 'linqmap_city_Out of district' not in df.columns:
+        data['linqmap_city_Out of district'] = np.zeros(df.shape[0]).astype(int)
     return data
 
 
-def preprocess(df: pd.DataFrame, geo: bool):
+def preprocess(df: pd.DataFrame, bar_name: str):
     convert_dates(df)
     process_accident(df)
     process_road_closed(df)
     process_jam(df)
     process_weatherhazard(df)
-    process_city_street(df, geo)
+    process_city_street(df, bar_name)
     remove_diluted_features(df)
     types_col = df["linqmap_type"]
     subtypes_col = df["linqmap_subtype"]
