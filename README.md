@@ -99,10 +99,8 @@ The output is a 3 by 4 table where each row corresponds to a time slot, the colu
 #### Evaluation
 In this section the grading is computed by the following weighted MSE:
 <div align="center">
-$(\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\ t}-y_{event,\ t})^2}{y_{event,\ t}+1})$
+$\displaystyle{\displaylines{\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\ t}-y_{event,\ t})^2}{y_{event,\ t}+1}}}$
 </div>
-test:
-$\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\ t}-y_{event,\ t})^2}{y_{event,\ t}+1}$
 ## Getting Started
 
 Disclaimer: There is quite a lot of things that jukebox needs for running, and there is more then one way to configure it. This is how I choose to connect everything together. 
