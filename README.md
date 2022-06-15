@@ -100,9 +100,9 @@ The output is a 3 by 4 table where each row corresponds to a time slot, the colu
 In this section the grading is computed by the following weighted MSE:
 <div align="center">
 
-![MSE_dark](https://latex.codecogs.com/svg.image?\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\&space;t}-y_{event,\&space;t})^2}{y_{event,\&space;t}&plus;1}#gh-light-mode-only)
+![MSE_dark](https://latex.codecogs.com/svg.image?%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B(%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D)%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D#gh-light-mode-only)
 
-![MSE_light](https://latex.codecogs.com/svg.image?\color{white}\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\&space;t}-y_{event,\&space;t})^2}{y_{event,\&space;t}&plus;1}#gh-drark-mode-only)
+![MSE_light](https://latex.codecogs.com/svg.image?%5Ccolor%7Bwhite%7D%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B(%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D)%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D#gh-drark-mode-only)
 </div>
 
 ## Getting Started
