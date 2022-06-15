@@ -100,9 +100,13 @@ The output is a 3 by 4 table where each row corresponds to a time slot, the colu
 In this section the grading is computed by the following weighted MSE:
 <div align="center">
 
-![img](http://www.sciweavers.org/tex2img.php?eq=%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B%28%5Chat%7By%7D_%7Bevent%2C%5C%20t%7D-y_%7Bevent%2C%5C%20t%7D%29%5E2%7D%7By_%7Bevent%2C%5C%20t%7D%2B1%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0[/img])
+![\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}](https://latex.codecogs.com/svg.image?\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\&space;t}-y_{event,\&space;t})^2}{y_{event,\&space;t}&plus;1}) 
 
 </div>
+![\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}](https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}) 
+![\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}](https://latex.codecogs.com/svg.image?\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\&space;t}-y_{event,\&space;t})^2}{y_{event,\&space;t}&plus;1}) 
+
+https://latex.codecogs.com/svg.image?\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\&space;t}-y_{event,\&space;t})^2}{y_{event,\&space;t}&plus;1}
 ## Getting Started
 
 Disclaimer: There is quite a lot of things that jukebox needs for running, and there is more then one way to configure it. This is how I choose to connect everything together. 
