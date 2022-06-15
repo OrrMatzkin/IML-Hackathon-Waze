@@ -73,15 +73,34 @@ independent task:
 Given a sequence of 4 consecutive events in Tel-Aviv (ordered by time) predict the next event.
 That is, given a sequence of 4 events $x_1,...,x_4$ predict the following features of the 5th event:
 (linqmap_type, linqmap_subtype, x coordinate, y coordinate).
-In this section the evaluation method is a weighted combination of F1-macro loss for
-linqmap_type, linqmap_subtype and l2 loss for the location - $(\hat{x} − x)^2 + (\hat{y} − y)^2$,
+
+#### Input & Output
 The input for this problem is a dataframe with groups of 4 events in Tel Aviv with same structure as the
 training data and a number indicating which group they belong to (the last column).
+
 The output is a dataframe with a single row per group and 4 columns corresponding to the values above.
-There are 10 different groups in the test set.
+
+#### Evaluation
+In this section the evaluation method is a weighted combination of F1-macro loss for
+linqmap_type, linqmap_subtype and l2 loss for the location - $(\hat{x} − x)^2 + (\hat{y} − y)^2$.
+
+
 
 ### Event Distribution Prediction
+Given a time range (start-end) predict the distribution of events across the nation.
+That is, for the following 3 time slots 8:00-10:00, 12:00-14:00, 18:00-20:00
+predict the number of events of each type.
 
+#### Input & Output
+The input is one of the dates: 05.06.2022, 07.06.2022 and 09.06.2022.
+
+The output is a 3 by 4 table where each row corresponds to a time slot, the columns match the linqmap_type (ACCIDENT, JAM, ROAD_CLOSED, WEATHERHAZARD).
+
+#### Evaluation
+In this section the grading is computed by the following weighted MSE:
+<div align="center">
+$\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\ t}-y_{event,\ t})^2}{y_{event,\ t}+1}$
+</div>
 
 ## Getting Started
 
