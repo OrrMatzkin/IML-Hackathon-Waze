@@ -71,10 +71,10 @@ independent task:
 ### Next Event Prediction
 
 Given a sequence of 4 consecutive events in Tel-Aviv (ordered by time) predict the next event.
-That is, given a sequence of 4 events $x1,...,x4$ predict the following features of the 5th event:
+That is, given a sequence of 4 events $x_1,...,x_4$ predict the following features of the 5th event:
 (linqmap_type, linqmap_subtype, x coordinate, y coordinate).
 In this section the evaluation method is a weighted combination of F1-macro loss for
-linqmap_type, linqmap_subtype and l2 loss for the location - $(xˆ − x)2 + (yˆ − y)2$,
+linqmap_type, linqmap_subtype and l2 loss for the location - $(\hat{x} − x)^2 + (\hat{y} − y)^2$,
 The input for this problem is a dataframe with groups of 4 events in Tel Aviv with same structure as the
 training data and a number indicating which group they belong to (the last column).
 The output is a dataframe with a single row per group and 4 columns corresponding to the values above.
