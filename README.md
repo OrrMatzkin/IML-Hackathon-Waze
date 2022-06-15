@@ -70,14 +70,11 @@ independent task:
 
 ### Next Event Prediction
 
-When $a \ne 0$, there are two solutions to $(ax^2 + bx + c = 0)$ and they are 
-$$ x = {-b \pm \sqrt{b^2-4ac} \over 2a} $$
-
 Given a sequence of 4 consecutive events in Tel-Aviv (ordered by time) predict the next event.
-That is, given a sequence of 4 events  $(ax^2 + bx + c = 0)$ x1,...,x4 predict the following features of the 5th event:
+That is, given a sequence of 4 events $x1,...,x4$ predict the following features of the 5th event:
 (linqmap_type, linqmap_subtype, x coordinate, y coordinate).
 In this section the evaluation method is a weighted combination of F1-macro loss for
-linqmap_type, linqmap_subtype and l2 loss for the location - (xˆ − x)2 + (yˆ − y)2 ,
+linqmap_type, linqmap_subtype and l2 loss for the location - $(xˆ − x)2 + (yˆ − y)2$,
 The input for this problem is a dataframe with groups of 4 events in Tel Aviv with same structure as the
 training data and a number indicating which group they belong to (the last column).
 The output is a dataframe with a single row per group and 4 columns corresponding to the values above.
