@@ -99,7 +99,9 @@ The output is a 3 by 4 table where each row corresponds to a time slot, the colu
 #### Evaluation
 In this section the grading is computed by the following weighted MSE:
 <div align="center">
-![equation](https://latex.codecogs.com/svg.image?\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\&space;t}-y_{event,\&space;t})^2}{y_{event,\&space;t}&plus;1})
+```math
+\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\ t}-y_{event,\ t})^2}{y_{event,\ t}+1}
+```
 </div>
 ## Getting Started
 
