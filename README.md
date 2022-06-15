@@ -98,10 +98,11 @@ The output is a 3 by 4 table where each row corresponds to a time slot, the colu
 
 #### Evaluation
 In this section the grading is computed by the following weighted MSE:
+<div align="center">
 
-```math
-\sum_{row}^{}\sum_{t}^{}\frac{(\hat{y}_{event,\ t}-y_{event,\ t})^2}{y_{event,\ t}+1}
-```
+![img](http://www.sciweavers.org/tex2img.php?eq=%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B%28%5Chat%7By%7D_%7Bevent%2C%5C%20t%7D-y_%7Bevent%2C%5C%20t%7D%29%5E2%7D%7By_%7Bevent%2C%5C%20t%7D%2B1%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0[/img])
+
+</div>
 ## Getting Started
 
 Disclaimer: There is quite a lot of things that jukebox needs for running, and there is more then one way to configure it. This is how I choose to connect everything together. 
