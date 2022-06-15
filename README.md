@@ -99,10 +99,15 @@ The output is a 3 by 4 table where each row corresponds to a time slot, the colu
 #### Evaluation
 In this section the grading is computed by the following weighted MSE:
 <div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://latex.codecogs.com/svg.image?%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B(%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D)%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D">
+  <source media="(prefers-color-scheme: light)" srcset="https://latex.codecogs.com/svg.image?%5Ccolor%7Bwhite%7D%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B(%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D)%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D">
+  <img alt="Shows an illustrated sun in light color mode and a moon with stars in dark color mode." src="https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png">
+</picture>
 
-![MSE_dark](https://latex.codecogs.com/svg.image?%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B(%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D)%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D#gh-light-mode-only)
+[//]: # (![MSE_dark]&#40;https://latex.codecogs.com/svg.image?%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B&#40;%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D&#41;%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D#gh-light-mode-only&#41;)
 
-![MSE_light](https://latex.codecogs.com/svg.image?%5Ccolor%7Bwhite%7D%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B(%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D)%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D#gh-drark-mode-only)
+[//]: # (![MSE_light]&#40;https://latex.codecogs.com/svg.image?%5Ccolor%7Bwhite%7D%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B&#40;%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D&#41;%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D#gh-drark-mode-only&#41;)
 </div>
 
 ## Getting Started
