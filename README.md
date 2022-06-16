@@ -20,7 +20,7 @@ to answer the following questions:
 
 ## Table of context
 - [Dataset](#dataset)
-- [Tasks](#tasks)
+- [Model Tasks](#tasks)
     - [Next Event Prediction](#next-event-prediction)
     - [Event Distribution Prediction](#event-distribution-prediction)
 - [Getting Started](#getting-started)
@@ -58,15 +58,17 @@ collected between 2021-02-07 to 2022-05-24. Each row describes a single event an
 | x                         | x coordinate of the event               | int    | 180774.21999999974      |
 | y                         | y coordinate of the event               | int    | 661479.4800000004       |
 
-The only features that are guaranteed to be present are ID, linqmap_type, x, y.
+*The only features that are guaranteed to be present are ID, linqmap_type, x, y.
+
+**The dates are given in POSIX time.
 
 <p align="right">(<a href="#about-the-project">back to top</a>)</p>
 
-## Task
-As mentioned in, this Hackathon we were asked to answer 2 independent question. Therefore, this program runs 2 
+## Model Tasks
+As mentioned, in this Hackathon we were asked to answer 2 independent question. Therefore, this program runs 2 
 independent task: 
-- Task No. 1: Predict Next Event
-- Task No. 2: Predict Event Distribution 
+1. Predict Next Event.
+2. Predict Event Distribution.
 
 ### Next Event Prediction
 
@@ -83,7 +85,6 @@ The output is a dataframe with a single row per group and 4 columns correspondin
 #### Evaluation
 In this section the evaluation method is a weighted combination of F1-macro loss for
 linqmap_type, linqmap_subtype and l2 loss for the location - $(\hat{x} − x)^2 + (\hat{y} − y)^2$.
-
 
 
 ### Event Distribution Prediction
@@ -109,68 +110,44 @@ In this section the grading is computed by the following weighted MSE:
 
 [//]: # (![MSE_light]&#40;https://latex.codecogs.com/svg.image?%5Ccolor%7Bwhite%7D%5Csum_%7Brow%7D%5E%7B%7D%5Csum_%7Bt%7D%5E%7B%7D%5Cfrac%7B&#40;%5Chat%7By%7D_%7Bevent,%5C%20t%7D-y_%7Bevent,%5C%20t%7D&#41;%5E2%7D%7By_%7Bevent,%5C%20t%7D&plus;1%7D#gh-drark-mode-only&#41;)
 </div>
+where $\hat{y}_{event, t}$ is the number of predicted of events of some type at time t,
+$y_{event, t}$ is the actual number of events of that type at time t.
 
 ## Getting Started
 
-Disclaimer: There is quite a lot of things that jukebox needs for running, and there is more then one way to configure it. This is how I choose to connect everything together. 
-
-You might find more detiles about how to make it all work in this article -> [fill missign]
-
-
-### Prerequisites
-
-#### Adafruit 
-
-1. Create a free account at [Adafruit IO](https://accounts.adafruit.com/users/sign_in).
-2. Create a new feed:
-    - Turn Feed History off.
-    - Remember it's name.
-3. Generate an Adafruit IO Key   
-
-#### IFTTT
-
-1. Create a free account at [IFTTT](https://ifttt.com).
-2. Create at least 3 applets trigged by Google Assistant, which sends data to Adafruit:
-    - For starting playing a music video.
-    - For stopping a music video.
-    - For displaying the jukebox available songs
-
-Again, to see an exaple check this article -> [fill missign].
+Our model requires ```Python 3.7+``` to run.
 
 
 ### Installation
 
-1. Clone the repo
+1. Clone the repo and enter the project directory:
    ```bash
-   git clone https://github.com/OrrMatzkin/jukebox-io-adafruit.git
+   git clone https://github.com/OrrMatzkin/IML.Hackathon.Waze.git
+   cd IML.Hackathon.Waze
    ```
-2. Install the required packages
-   ```bash
-   pip3 install python-vlc
-   pip3 install pip install adafruit-io
+2. Install and run a virtualenv isolated Python environment (this step is not mandatory but recommended):
+    ```bash
+    pip3 install virtualenv
+    virtualenv IML.Hackathon.Waze
+    source IML.Hackathon.Waze/bin/activate
    ```
-3. Enter your Adafruit details in `adafruit_config.json`
-   ```json
-    "ADAFRUIT_IO_KEY": "<YOUR ADAFRUIT IO KEY>",
-    "ADAFRUIT_IO_USERNAME": "<YOUR ADAFRUIT IO USERNAME>",
-    "AIO_FEED_ID": "<YOUR ADAFRUIT IO FEED NAME>" 
-   ```
-4. Make sure your device (Raspberry pi) is connected to a monitor and a set of speakers.
 
+3. The ```requirements.txt``` file should list all Python libraries that your notebooks depend on, and they will be installed using:
+   ```bash
+   pip3 install -r requirements.txt
+   ```
 
 ### Run Locally
 
-Go to the project directory
+
+The program is set to run both tasks. Both tasks need the ```data``` to train their models, the Next Event Prediction task
+also needs ```take_features``` sequences of 4 consecutive events. Therefore, the program requires 2 arguments in total to run:
 
 ```bash
- cd jukebox-io-adafruit
+python3 main.py data/waze_data.cvs data/waze_take_features.csv
 ```
 
-Start the the program
-
-```bash
- python3 jukebox.py
-```
+The program would train the models, run both tasks and save the prediction as csv, as defied in the tasks section.
 
 <p align="right">(<a href="#about-the-project">back to top</a>)</p>
 
