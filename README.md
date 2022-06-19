@@ -24,12 +24,12 @@ to answer the following questions:
     - [Next Event Prediction](#next-event-prediction)
     - [Event Distribution Prediction](#event-distribution-prediction)
 - [Getting Started](#getting-started)
-    - [Requirements](#requirements)
-    - [Prerequisites](#prerequisites)
     - [Installation](#installation)
     - [Run Locally](#run-locally)   
-- [Features](#features)        
-- [Adding new Music Videos](#adding-new-music-videos)    
+- [Dive In](#dive-in)    
+  - [Preprocess](#reprocess)
+  - [Next Event](#next-event)                     
+  - [Event Distribution](#event-distribution)     
        
 
 
@@ -125,82 +125,79 @@ Our model requires ```Python 3.7+``` to run.
    git clone https://github.com/OrrMatzkin/IML.Hackathon.Waze.git
    cd IML.Hackathon.Waze
    ```
-2. Install and run a virtualenv isolated Python environment (this step is not mandatory but recommended):
+2. Install and run a virtualenv, isolated Python environment (this step is not mandatory but recommended):
     ```bash
     pip3 install virtualenv
     virtualenv IML.Hackathon.Waze
     source IML.Hackathon.Waze/bin/activate
    ```
 
-3. The ```requirements.txt``` file should list all Python libraries that your notebooks depend on, and they will be installed using:
+3. The ```requirements.txt``` file lists all Python libraries that our program depends on, they will be installed using:
    ```bash
    pip3 install -r requirements.txt
    ```
 
 ### Run Locally
 
-
-The program is set to run both tasks. Both tasks need the ```data``` to train their models, the Next Event Prediction task
-also needs ```take_features``` sequences of 4 consecutive events. Therefore, the program requires 2 arguments in total to run:
+The program is set to run both tasks. The program needs ```data``` to train its models, the Next Event Prediction task
+also needs ```take_features``` sequences of 4 consecutive events. Therefore, the program requires 2 arguments in total to run
+(we already supplied real time data):
 
 ```bash
 python3 main.py data/waze_data.cvs data/waze_take_features.csv
 ```
-
-The program would train the models, run both tasks and save the prediction as csv, as defied in the tasks section.
+While the program runs it will update you of its stage. After the program would train the models it will run both tasks
+and save the prediction as csv, as defied in the tasks section.
 
 <p align="right">(<a href="#about-the-project">back to top</a>)</p>
 
-## Features
+## Dive In
 
-- [x] Play/stop local video songs
-- [x] Show available songs
-- [ ] Increase/decrease volume
-- [ ] Play/stop youtube video songs (pafy integratiion)
-- [ ] Create and play a playlist of songs
-  - [ ] By artist name
-  - [ ] By a preloaded playlist 
-- [ ] Remove the need for a json data file
-- [ ] A Better score mechanism for songs
-- [ ] A "hard" integrated assistant control
+In the next few sections we will walk you through how are program and models work.
+
+### Preprocess
+
+Before even approaching the task, we saved 20% of the data for a last minute test, as the data we have been given is 
+precious and of-course limited.
+
+Then we looked and examined the Data, we wanted to figure out what features we hold and how the data is represented.
+We found out that we have two types of dates, many features about location and little data about the reporters themselves. 
+
+Before we tried to understand what features we wish to keep and what new one to create by computing the correlation
+between them, we cleaned the data with a couple of ways including:
+- Getting rid of duplicates (by id).
+- Filling missing data by analyze same samples with close destination and time to the area
+- Converting dates to date format.
+- Finding correlation between subtypes and location inside and outside of town.
+- Creating dummies values for non-numeric features
+- And many more...
+ 
+One example of what we succeeded to learn from the raw data is where most of the events (by type) occurs geographically.
+We saw by to printing (x,y) location of events that most of the jams are in Tel-Aviv (no surprise here)
+
+![map1](https://github.com/OrrMatzkin/IML.Hackathon.Waze/blob/main/figures/x_y_events_map.png?raw=true)
+                                                            
+
+### Next Event   
+
+
+
+### Event Distribution       
+
+
+
+
+
+
+
+
+
+
+<p align="right">(<a href="#about-the-project">back to top</a>)</p>
 
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#about-the-project">back to top</a>)</p>
-
-## Adding new Music Videos
-
-This Repo comes with 6 (great) song:
-
-1. David Bowie - Space Oddity.mp4
-2. Louis Armstrong - What a Wonderful World.mp4
-3. Marvin Gaye Tammi Terrell - Aint No Mountain High Enough.mp4
-4. Oasis - Wonderwall.mp4
-5. Roy Orbison - You Got It.mov
-6. The Police - Every Breath You Take.mp4
-
-To add a new song follow this steps:
-
-1. Download your favorite music video. *
-2. Rename the file to "\<Artist Name\> - \<Song Name\>.\<FIle Format\>" (see exmaple above).
-4. Move the file to the `songs` directory.
-3. Add the song details in `songs_data.json`
-   ```json
-   {
-        "id": 0,
-        "name": "<Song Name>",
-        "artist": "<Artist Name>",
-        "path": "<Path to song fille>",
-        "matches": ["<match1>", "<match2>", "<match3>", "<match4>",...]
-    }
-   ```
-
-\* VLC supports: ASF, AVI, FLAC, FLV, Fraps, Matroska, MP4, MPJPEG, MPEG-2 (ES, MP3), Ogg, PS, PVA, QuickTime File Format, TS, WAV, WebM
-
-\*\* The Matches field is how a song is picked after a voice command. For an example check the given `songs_data.json` file
-
-<p align="right">(<a href="#about-the-project">back to top</a>)</p>
 
 ## Copyright
 
