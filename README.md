@@ -175,8 +175,6 @@ between them, we cleaned the data with a couple of ways including:
 One example of what we succeeded to learn from the raw data is where most of the events (by type) occurs geographically.
 We saw by to printing (x,y) location of events that most of the jams are in Tel-Aviv (no surprise here)
 
-![map1](https://github.com/OrrMatzkin/IML.Hackathon.Waze/blob/main/figures/x_y_events_map.png?raw=true)
-
 <div align="center">
 <img src="https://github.com/OrrMatzkin/IML.Hackathon.Waze/blob/main/figures/x_y_events_map.png?raw=true" alt="drawing" width="600"/>
 </div>
@@ -205,10 +203,11 @@ See the [open issues](https://github.com/othneildrew/Best-README-Template/issues
 ## Contributors
 
 <a href="https://github.com/OrrMatzkin/IML-Hackathon-Waze/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=OrrMatzkin/IML-Hackathon-Waze" />
+  <img src="https://contrib.rocks/image?repo=OrrMatzkin/IML-Hackathon-Waze" width="200"/>
 </a>
 
-![us](https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/us.jpeg?raw=true)
+Thank you for reading and having interest in our hackathon project...
+
 
 <div align="center">
 <img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/us.jpeg?raw=true" alt="drawing" width="600"/>
