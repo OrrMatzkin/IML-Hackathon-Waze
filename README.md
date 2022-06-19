@@ -1,10 +1,10 @@
 # Introduction to Machine Learning (67577) - Hackathon 2022 - Waze Challenge
 
-![GitHub last commit](https://img.shields.io/github/last-commit/OrrMatzkin/IML.Hackathon.Waze=orange)
-![GitHub issues](https://img.shields.io/github/issues/OrrMatzkin/IML.Hackathon.Waze?color=yellow)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/OrrMatzkin/IML.Hackathon.Waze?color=yellow)
-![GitHub repo size](https://img.shields.io/github/repo-size/OrrMatzkin/IML.Hackathon.Waze)
-![GitHub](https://img.shields.io/github/license/OrrMatzkin/IML.Hackathon.Waze)
+![GitHub last commit](https://img.shields.io/github/last-commit/OrrMatzkin/IML-Hackathon-Waze)
+![GitHub issues](https://img.shields.io/github/issues/OrrMatzkin/IML-Hackathon-Waze?color=yellow)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/OrrMatzkin/IML-Hackathon-Waze?color=yellow)
+![GitHub repo size](https://img.shields.io/github/repo-size/OrrMatzkin/IML-Hackathon-Waze)
+![GitHub](https://img.shields.io/github/license/OrrMatzkin/IML-Hackathon-Waze?color=orange)
 
 ## About the project
 
@@ -176,7 +176,10 @@ One example of what we succeeded to learn from the raw data is where most of the
 We saw by to printing (x,y) location of events that most of the jams are in Tel-Aviv (no surprise here)
 
 ![map1](https://github.com/OrrMatzkin/IML.Hackathon.Waze/blob/main/figures/x_y_events_map.png?raw=true)
-                                                            
+
+<div align="center">
+<img src="https://github.com/OrrMatzkin/IML.Hackathon.Waze/blob/main/figures/x_y_events_map.png?raw=true" alt="drawing" width="600"/>
+</div>
 
 ### Next Event   
 
@@ -198,6 +201,18 @@ We saw by to printing (x,y) location of events that most of the jams are in Tel-
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 
+
+## Contributors
+
+<a href="https://github.com/OrrMatzkin/IML-Hackathon-Waze/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=OrrMatzkin/IML-Hackathon-Waze" />
+</a>
+
+![us](https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/us.jpeg?raw=true)
+
+<div align="center">
+<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/us.jpeg?raw=true" alt="drawing" width="600"/>
+</div>
 
 ## Copyright
 
