@@ -1,4 +1,4 @@
-# Introduction to Machine Learning (67577) - Hackathon 2022 - Waze Challenge
+# Introduction to Machine Learning - Hackathon 2022 - Waze Challenge
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/OrrMatzkin/IML-Hackathon-Waze)
 ![GitHub issues](https://img.shields.io/github/issues/OrrMatzkin/IML-Hackathon-Waze?color=yellow)
@@ -173,10 +173,10 @@ between them, we cleaned the data with a couple of ways including:
 - And many more...
  
 One example of what we succeeded to learn from the raw data is where most of the events (by type) occurs geographically.
-We saw by to printing (x,y) location of events that most of the jams are in Tel-Aviv (no surprise here)
+We saw by to printing (x,y) location of events that most of the jams are in Tel-Aviv (no surprise here).
 
 <div align="center">
-<img src="https://github.com/OrrMatzkin/IML.Hackathon.Waze/blob/main/figures/x_y_events_map.png?raw=true" alt="drawing" width="600"/>
+<img src="https://github.com/OrrMatzkin/IML.Hackathon.Waze/blob/main/figures/x_y_events_map.png?raw=true" alt="x_y_events_map" width="600"/>
 </div>
 
 ### Next Event   
@@ -190,7 +190,7 @@ This way we can build models with samples and labels as we want.
 <img src="https://raw.githubusercontent.com/OrrMatzkin/IML-Hackathon-Waze/main/figures/quartet.png?raw=true" alt="drawing" width="600"/>
 </div>
 
-#### How The Model works ?
+#### How The Model Works?
 Each sample (quartet, from now on) goes through two models,:
 one for the type and a second model for the subtype that assumes the sample has a specific type.
 With the samples represented as 4 samples inside each sample and the labels
@@ -198,21 +198,20 @@ from the corresponding sample we get the “simple” model.
 To choose a model we split the train data to validation data and new train data.
 The new train data has been used for fitting each model and checking how good the prediction on the validation data.
 
-#### How We chose the model ?
+#### How We Chose the Model?
 To understand the best version of each family of models we used K-fold.
 We got the best hyperparameter that best predict the new train data.
 
 <div align="center">
-<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/random_forest_error.png?raw=true" alt="random_forest_error" width="600"/>
-<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/extra_tree_error.png?raw=true
-" alt="extra_tree_error" width="600"/>
+<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/random_forest_error.png?raw=true" alt="random_forest_error" width="800"/>
+<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/extra_tree_error.png?raw=true" alt="extra_tree_error" width="800"/>
 </div>
 
 The model of type got the best result from ExtraTreeClassifier.
 The 4 models of subtype got the best result from ExtraTreeClassifier.
 The 2 models of X and Y coordinates got the best result from RandomForsetRegressor
 
-#### How We fit the model ?
+#### How We fit the Model?
 Each sample is 4 samples combined as one sample.
 Each label is the type of the consecutive sample of the 4 samples from the dataset. 
 For Each Type we made a new model with multi-class as label. So each label could be one of the subtypes of each type.
@@ -240,11 +239,15 @@ been gathered from and number of events from each type.
 
 Thank you for reading and showing interest in our hackathon project...
 
+Keep in mind, we don't need any contribution to this project whatsoever.
 
 
 <div align="center">
 <img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/us.jpeg?raw=true" alt="drawing" width="600"/>
 </div>
+
+<p align="right">(<a href="#about-the-project">back to top</a>)</p>
+
 
 ## Copyright
 
