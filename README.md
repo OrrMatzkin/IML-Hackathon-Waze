@@ -203,7 +203,7 @@ To understand the best version of each family of models we used K-fold.
 We got the best hyperparameter that best predict the new train data.
 
 <div align="center">
-<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/random_forest_error.png?raw=true" alt="random_forest_error" width="800"/>
+<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/random_forest_error.png?raw=true" alt="random_forest_error" width="830"/>
 <img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/extra_tree_error.png?raw=true" alt="extra_tree_error" width="800"/>
 </div>
 
