@@ -181,23 +181,54 @@ We saw by to printing (x,y) location of events that most of the jams are in Tel-
 
 ### Next Event   
 
+#### How The Data is represented?
+For fitting and predicting each quartet (4 samples) we took every sequence of 4 consecutive samples 
+and convert them into one sample. The label was the type, subtype, x coordinate and y coordinate.
+This way we can build models with samples and labels as we want.
 
+<div align="center">
+<img src="https://raw.githubusercontent.com/OrrMatzkin/IML-Hackathon-Waze/main/figures/quartet.png?raw=true" alt="drawing" width="600"/>
+</div>
 
-### Event Distribution       
+#### How The Model works ?
+Each sample (quartet, from now on) goes through two models,:
+one for the type and a second model for the subtype that assumes the sample has a specific type.
+With the samples represented as 4 samples inside each sample and the labels
+from the corresponding sample we get the “simple” model.
+To choose a model we split the train data to validation data and new train data.
+The new train data has been used for fitting each model and checking how good the prediction on the validation data.
 
+#### How We chose the model ?
+To understand the best version of each family of models we used K-fold.
+We got the best hyperparameter that best predict the new train data.
 
+<div align="center">
+<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/random_forest_error.png?raw=true" alt="random_forest_error" width="600"/>
+<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/extra_tree_error.png?raw=true
+" alt="extra_tree_error" width="600"/>
+</div>
 
+The model of type got the best result from ExtraTreeClassifier.
+The 4 models of subtype got the best result from ExtraTreeClassifier.
+The 2 models of X and Y coordinates got the best result from RandomForsetRegressor
 
+#### How We fit the model ?
+Each sample is 4 samples combined as one sample.
+Each label is the type of the consecutive sample of the 4 samples from the dataset. 
+For Each Type we made a new model with multi-class as label. So each label could be one of the subtypes of each type.
 
+#### Results
+We got 0.62 on the train with f1 macro and 0.28 on the test
+(while the test has been checked only after we finished the work).
 
+### Event Distribution    
 
-
+We chose to analyze the data by day of week and time slots in each day.
+Then we calculated the average of events in each time slot, the average calculated by the number of days the data has
+been gathered from and number of events from each type.
 
 
 <p align="right">(<a href="#about-the-project">back to top</a>)</p>
-
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 
 
 ## Contributors
@@ -206,7 +237,9 @@ See the [open issues](https://github.com/othneildrew/Best-README-Template/issues
   <img src="https://contrib.rocks/image?repo=OrrMatzkin/IML-Hackathon-Waze" width="200"/>
 </a>
 
-Thank you for reading and having interest in our hackathon project...
+
+Thank you for reading and showing interest in our hackathon project...
+
 
 
 <div align="center">
