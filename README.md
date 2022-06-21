@@ -236,15 +236,9 @@ been gathered from and number of events from each type.
   <img src="https://contrib.rocks/image?repo=OrrMatzkin/IML-Hackathon-Waze" width="200"/>
 </a>
 
-
 Thank you for reading and showing interest in our hackathon project...
-
 Keep in mind, we don't need any contribution to this project whatsoever.
 
-
-<div align="center">
-<img src="https://github.com/OrrMatzkin/IML-Hackathon-Waze/blob/main/figures/us.jpeg?raw=true" alt="drawing" width="600"/>
-</div>
 
 <p align="right">(<a href="#about-the-project">back to top</a>)</p>
 
