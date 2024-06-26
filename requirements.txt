@@ -2,7 +2,7 @@ certifi==2023.7.22
 geographiclib==1.52
 geopy==2.2.0
 joblib==1.2.0
-numpy==1.21.6
+numpy==1.22.0
 pandas==1.1.5
 plotly==5.1.0
 pyproj==3.2.1
