@@ -1,4 +1,4 @@
-certifi==2023.7.22
+certifi==2024.7.4
 geographiclib==1.52
 geopy==2.2.0
 joblib==1.2.0
